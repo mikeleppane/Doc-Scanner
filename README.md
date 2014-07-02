@@ -6,9 +6,9 @@ Doc Scanner UI is written purely in QML(Qt5) and the application logic using C++
 
 ToDo
 ----
-Attach image/.pdf file directly to email.
-Enhance image sharpness and quality (perhaps using python PIL module)
-Support for multiple docs
+- Attach image/.pdf file directly to email.
+- Enhance image sharpness and quality (perhaps using python PIL module)
+- Support for multiple docs
 
 Downloads
 ---------
