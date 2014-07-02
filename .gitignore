@@ -1,0 +1,40 @@
+# C++ objects and libs
+*~
+*.com
+*.exe
+*.o
+*.a
+*.so
+*.dll
+*.slo
+*.lo
+*.dylib
+*.lai
+*.la
+
+# Qt related files
+
+*.pro.user
+*.pro.user.*
+moc_*.cpp
+qrc_*.cpp
+Makefile
+*-build-*
+
+# Packages
+
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases
+
+*.log
+*.sql
+*.sqlite
+
