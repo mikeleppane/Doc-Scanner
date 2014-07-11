@@ -103,8 +103,9 @@ Page {
 
             focus {
                 focusMode: Camera.FocusContinuous
-                focusPointMode: Camera.FocusPointAuto
+                focusPointMode: Camera.FocusPointCenter
             }
+            flash.mode: Camera.FlashOff
         }
     }
 
