@@ -32,7 +32,7 @@ bool checkIfImageFormatSupported(const QString &path)
 
 Logic::Logic(QObject *parent) : QObject(parent) {}
 
-void Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
+QString Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
     const
 {
     QFile file(pathToImage);
@@ -54,9 +54,18 @@ void Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
 
         QRect rect(x_new, y_new, w_new, h_new);
         img = img.copy(rect);
-        file.remove();
-        img.save(pathToImage);
+        QString suffix = QFileInfo(pathToImage).suffix();
+        QString newImageName = pathToImage;
+        newImageName.truncate(newImageName.lastIndexOf("."));
+        QDate date = QDate::currentDate();
+        QTime time = QTime::currentTime();
+        newImageName = newImageName + QString("_scan_created_") +
+                       date.toString("dd-MM-yyyy") + "_" +
+                       time.toString("hh:mm:ss") + "." + suffix;
+        img.save(newImageName);
+        return newImageName;
     }
+    return QString();
 }
 
 int Logic::getImageHeight(const QString &pathToImage) const
@@ -69,6 +78,18 @@ int Logic::getImageHeight(const QString &pathToImage) const
         return img.height();
     }
     return 0;
+}
+
+QString Logic::getImageCreateDate(const QString &pathToImage) const
+{
+    QFile file(pathToImage);
+    if (file.exists()) {
+        QDateTime datetime = QFileInfo(pathToImage).created();
+        file.close();
+        return datetime.toString("ddd MMMM d yyyy") + " " +
+               datetime.toString("hh:mm:ss");
+    }
+    return QString();
 }
 
 void Logic::sendEmail() const { QDesktopServices::openUrl(QUrl("mailto:")); }

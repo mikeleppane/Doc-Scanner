@@ -13,10 +13,11 @@ class Logic : public QObject
 public:
     explicit Logic(QObject *parent = 0);
 
-    Q_INVOKABLE void scanImage(int x, int y, int w, int h,
+    Q_INVOKABLE QString scanImage(int x, int y, int w, int h,
                                const QString &) const;
     Q_INVOKABLE int getImageWidth(const QString &) const;
     Q_INVOKABLE int getImageHeight(const QString &) const;
+    Q_INVOKABLE QString getImageCreateDate(const QString &) const;
     Q_INVOKABLE void sendEmail() const;
     Q_INVOKABLE void convertToPDF(const QString &) const;
     Q_INVOKABLE void rotateImage(const QString &) const;
