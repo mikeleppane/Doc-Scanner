@@ -9,7 +9,7 @@ Page {
     //width: Screen.width
     //height: Screen.height
     allowedOrientations: Orientation.Landscape | Orientation.Portrait
-    backNavigation: Vars.CANBACKNAVIGATE
+    backNavigation: false
     property string path: null
     property bool isScannedImage: false
 
@@ -18,6 +18,14 @@ Page {
         anchors.fill: parent
         visible: false
         PullDownMenu {
+            MenuItem {
+                text: qsTr("Home")
+                onClicked: {
+                    //pageStack.navigateBack(PageStackAction.Animated)
+                    pageStack.clear();
+                    pageStack.push(Qt.resolvedUrl("MainPage.qml"));
+                }
+            }
             MenuItem {
                 text: qsTr("Convert to PDF")
                 onClicked: {
@@ -66,35 +74,39 @@ Page {
         icon.source: "image://theme/icon-camera-shutter-release"
 
         onClicked: {
-            logic.scanImage(area.cx, area.cy, area.cw, area.ch, path);
-            img.source = path
-            img.sourceSize.width = logic.getImageHeight(path) > logic.getImageWidth(path)
-                    ? logic.getImageHeight(path) : logic.getImageWidth(path)
-            img.sourceSize.height = logic.getImageWidth(path) > logic.getImageHeight(path)
-                    ? logic.getImageWidth(path) : logic.getImageHeight(path)
-            area.visible = false;
-            options.visible = true;
-            visible = false;
-            Vars.CANBACKNAVIGATE = true;
-            DB.addImage(path);
+            path = logic.scanImage(area.cx, area.cy, area.cw, area.ch, path);
+            if (path !== "") {
+                DB.addImage(path);
+                img.source = path
+                img.sourceSize.width = logic.getImageHeight(path) > logic.getImageWidth(path)
+                        ? logic.getImageHeight(path) : logic.getImageWidth(path)
+                img.sourceSize.height = logic.getImageWidth(path) > logic.getImageHeight(path)
+                        ? logic.getImageWidth(path) : logic.getImageHeight(path)
+                area.visible = false;
+                options.visible = true;
+                visible = false;
+                page.backNavigation = true;
+            }
         }
         z: 20
     }
 
     onOrientationChanged: {
+        area.nullifyPoints();
         area.cHeight = isPortrait ? Screen.width : Screen.height
         area.cWidth = isPortrait ? Screen.height : Screen.width
         area.resetTouchPoints();
-        area.circleLineW = 2;
-        Vars.CANBACKNAVIGATE = true;
+        area.resetLineW();
+        //Vars.CANBACKNAVIGATE = false;
     }
     onStatusChanged: {
         if (status === PageStatus.Activating) {
-            Vars.CANBACKNAVIGATE = true;
+            //Vars.CANBACKNAVIGATE = false;
             if (isScannedImage) {
                 area.visible = false;
                 options.visible = true;
                 scanButton.visible = false;
+                page.backNavigation = true;
             }
 
          }
