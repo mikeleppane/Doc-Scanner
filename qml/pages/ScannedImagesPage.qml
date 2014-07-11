@@ -27,7 +27,6 @@ Page {
             id: pageheader
             title: qsTr("Scanned Images")
         }
-        spacing: Theme.paddingMedium
         ViewPlaceholder {
             enabled: imageModel.count === 0
             text: "No scanned images available"
@@ -43,18 +42,17 @@ Page {
         BackgroundItem {
             id: bgItem
             width: ListView.view.width
-            height: img.height + Theme.itemSizeSmall
+            height: img.height + col.childrenRect.height + dLabel.height + Theme.itemSizeSmall
             anchors {
                 left: parent.left
                 leftMargin: Theme.paddingLarge
                 right: parent.right
                 rightMargin: Theme.paddingLarge
             }
-
             Image {
                 id: img
                 source: path
-                fillMode: Image.PreserveAspectFit
+                fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 height: 300
                 width: 300
@@ -63,10 +61,35 @@ Page {
                 smooth: true
                 cache: false
             }
+            Column {
+                id: col
+                spacing: 0
+                anchors {
+                    top: img.bottom
+                    topMargin: Theme.paddingSmall
+                    left: img.left
+                    right: parent.right
+                    rightMargin: Theme.paddingLarge
+                }
+                Label {
+                    width: imagepage.width
+                    text: logic.getImageWidth(path) + " x " + logic.getImageHeight(path) + " px"
+                    font.pixelSize: Theme.fontSizeSmall
+                    color: Theme.highlightColor
+                    elide: Text.ElideRight
+                }
+                Label {
+                    width: imagepage.width
+                    text: logic.getImageCreateDate(path)
+                    font.pixelSize: Theme.fontSizeSmall
+                    color: Theme.highlightColor
+                    elide: Text.ElideRight
+                }
+            }
             Label {
                 id: dLabel
                 anchors {
-                    top: img.bottom
+                    top: col.bottom
                     left: img.left
                     right: parent.right
                     rightMargin: Theme.paddingLarge
@@ -75,7 +98,6 @@ Page {
                 text: path
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.highlightColor
-                font.underline: true
                 elide: Text.ElideRight
             }
             onClicked: {
@@ -84,10 +106,14 @@ Page {
             }
             onPressAndHold: {
                 remorse.execute(bgItem, qsTr("Deleting image..."), function() {
+                                var ind = index;
                                 DB.removeImage(path)
+                                logic.removeImage(path);
                                 images.splice(index,1);
                                 imageModel.remove(index);
-                                listView.positionViewAtBeginning();
+                                if (ind > 1) {
+                                    listView.positionViewAtIndex(ind - 1,ListView.SnapPosition)
+                                }
                 });
             }
             RemorseItem { id: remorse;}

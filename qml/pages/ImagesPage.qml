@@ -26,7 +26,7 @@ Page {
             id: pageheader
             title: qsTr("Images")
         }
-        spacing: Theme.paddingMedium
+        spacing: Theme.paddingSmall
         ViewPlaceholder {
             enabled: imageModel.count === 0
             text: "No images available"
@@ -42,7 +42,7 @@ Page {
         BackgroundItem {
             id: bgItem
             width: ListView.view.width
-            height: img.height + Theme.itemSizeSmall
+            height: img.height + Theme.itemSizeMedium
             anchors {
                 left: parent.left
                 leftMargin: Theme.paddingLarge
@@ -53,7 +53,7 @@ Page {
             Image {
                 id: img
                 source: path
-                fillMode: Image.PreserveAspectFit
+                fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 height: 300
                 width: 300
@@ -66,6 +66,7 @@ Page {
                 id: dLabel
                 anchors {
                     top: img.bottom
+                    topMargin: Theme.paddingSmall
                     left: img.left
                     right: parent.right
                     rightMargin: Theme.paddingLarge
@@ -82,10 +83,13 @@ Page {
             }
             onPressAndHold: {
                 remorse.execute(bgItem, qsTr("Deleting image..."), function() {
+                                var ind = index;
                                 logic.removeImage(path);
                                 images.splice(index,1);
                                 imageModel.remove(index);
-                                listView.positionViewAtBeginning();
+                                if (ind > 1) {
+                                    listView.positionViewAtIndex(ind - 1,ListView.SnapPosition)
+                                }
                 });
             }
             RemorseItem { id: remorse;}
