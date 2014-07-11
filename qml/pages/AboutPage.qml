@@ -48,10 +48,10 @@ Page {
             font.pixelSize: Theme.fontSizeMedium
             color: "white"
             text: "<style>a:link { color: " + Theme.highlightColor + "; }</style>" +
-                  "Version 1.0 <br/>" +
+                  "Version 1.1 <br/>" +
                   qsTr('Created by Mikko Leppänen') + '<br/>' +
                   qsTr('The source code is available at %1').
-                  arg('<br/> <a href="https://github.com/MikeL83/Measure-Tool">%1</a>').arg("Project webpage")
+                  arg('<br/> <a href="https://github.com/MikeL83/Doc-Scanner">%1</a>').arg("Project webpage")
 
             onLinkActivated: {
                 Qt.openUrlExternally(link);
