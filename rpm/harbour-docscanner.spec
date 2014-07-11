@@ -13,7 +13,7 @@ Name:       harbour-docscanner
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    Doc Scanner - SailfishOS Application
-Version:    1.0
+Version:    1.1
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -25,6 +25,9 @@ BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  qt5-qtdeclarative-import-multimedia
+BuildRequires:  qt5-qtdeclarative-import-localstorageplugin
+BuildRequires:  libprofile-qt5
 BuildRequires:  desktop-file-utils
 
 %description

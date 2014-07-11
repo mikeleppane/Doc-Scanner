@@ -1,6 +1,6 @@
 Name: harbour-docscanner
 Summary: Doc Scanner - SailfishOS Application
-Version: 1.0
+Version: 1.1
 Release: 1
 # The contents of the Group field must be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
@@ -43,4 +43,6 @@ Files:
 
 # For more information about yaml and what's supported in Sailfish OS
 # build system, please see https://wiki.merproject.org/wiki/Spectacle
-
+PkgBR: [qt5-qtdeclarative-import-multimedia,
+        qt5-qtdeclarative-import-localstorageplugin,
+        libprofile-qt5]
