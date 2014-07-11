@@ -17,8 +17,7 @@ function createTable() {
 
 function addImage(path) {
     db.transaction( function(tx) {
-        tx.executeSql("INSERT INTO Images (path) VALUES(?)",
-           [path]
+        tx.executeSql("INSERT INTO Images(path) VALUES(?)", [path]
         );
     });
 }
