@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "scripts/DocScannerDB.js" as DB
 //import "../pages/scripts/Vars.js" as Vars
 
 Page {
@@ -12,21 +13,27 @@ Page {
     /*
     BusyIndicator {
         anchors.centerIn: parent
-        running: listView.model.status === ListModel.Loading
+        running: gridView.model.status === ListModel.Loading
         size: BusyIndicatorSize.Medium
     }
     */
 
-    SilicaListView {
-        id: listView
+    SilicaGridView {
+        id: gridView
         anchors.fill: parent
+        anchors.horizontalCenter: parent.horizontalCenter
         clip: true
+
         model: ListModel {id: imageModel}
+
         header: PageHeader {
             id: pageheader
             title: qsTr("Images")
         }
-        spacing: Theme.paddingSmall
+
+        cellWidth: imagepage.width / 3
+        cellHeight: imagepage.width / 3
+
         ViewPlaceholder {
             enabled: imageModel.count === 0
             text: "No images available"
@@ -41,54 +48,35 @@ Page {
         id: imageDelegate
         BackgroundItem {
             id: bgItem
-            width: ListView.view.width
-            height: img.height + Theme.itemSizeMedium
-            anchors {
-                left: parent.left
-                leftMargin: Theme.paddingLarge
-                right: parent.right
-                rightMargin: Theme.paddingLarge
-            }
+            width: imagepage.width / 3 //GridView.view.width / 2
+            height: imagepage.width / 3 //+ Theme.itemSizeMedium
 
             Image {
                 id: img
                 source: path
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
-                height: 300
-                width: 300
-                sourceSize.height: 300
-                sourceSize.width: 300
+                height: imagepage.width / 3
+                width: imagepage.width / 3
+                sourceSize.height: imagepage.width / 3
+                sourceSize.width: imagepage.width / 3
                 smooth: true
                 cache: false
             }
-            Label {
-                id: dLabel
-                anchors {
-                    top: img.bottom
-                    topMargin: Theme.paddingSmall
-                    left: img.left
-                    right: parent.right
-                    rightMargin: Theme.paddingLarge
-                }
-                width: imagepage.width
-                text: path
-                font.pixelSize: Theme.fontSizeSmall
-                color: Theme.highlightColor
-                font.underline: true
-                elide: Text.ElideRight
-            }
+
             onClicked: {
-                onClicked: pageStack.push(Qt.resolvedUrl("ImagePage.qml"),{"path": path});
+                onClicked: pageStack.push(Qt.resolvedUrl("ImagePage.qml"),{"path": path,
+                                          "isScannedImage": true});
             }
             onPressAndHold: {
                 remorse.execute(bgItem, qsTr("Deleting image..."), function() {
                                 var ind = index;
+                                DB.removeImage(path);
                                 logic.removeImage(path);
                                 images.splice(index,1);
                                 imageModel.remove(index);
                                 if (ind > 1) {
-                                    listView.positionViewAtIndex(ind - 1,ListView.SnapPosition)
+                                     gridView.positionViewAtIndex(ind - 1,GridView.SnapPosition)
                                 }
                 });
             }
