@@ -17,6 +17,8 @@
 #include <QList>
 #include <QImageReader>
 #include <QByteArray>
+#include <QStandardPaths>
+#include <QDebug>
 #include <algorithm>
 #include "logic.h"
 
@@ -56,12 +58,19 @@ QString Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
         img = img.copy(rect);
         QString suffix = QFileInfo(pathToImage).suffix();
         QString newImageName = pathToImage;
-        newImageName.truncate(newImageName.lastIndexOf("."));
         QDate date = QDate::currentDate();
         QTime time = QTime::currentTime();
-        newImageName = newImageName + QString("_scan_created_") +
-                       date.toString("dd-MM-yyyy") + "_" +
-                       time.toString("hh:mm:ss") + "." + suffix;
+        if (pathToImage.contains("_scan_created_", Qt::CaseInsensitive)) {
+            newImageName.truncate(newImageName.indexOf("_scan_created_"));
+            newImageName = newImageName + QString("_scan_created_") +
+                           date.toString("dd-MM-yyyy") + "_" +
+                           time.toString("hh:mm:ss") + "." + suffix;
+        } else {
+            newImageName.truncate(newImageName.lastIndexOf("."));
+            newImageName = newImageName + QString("_scan_created_") +
+                           date.toString("dd-MM-yyyy") + "_" +
+                           time.toString("hh:mm:ss") + "." + suffix;
+        }
         img.save(newImageName);
         return newImageName;
     }
@@ -80,13 +89,31 @@ int Logic::getImageHeight(const QString &pathToImage) const
     return 0;
 }
 
+QString Logic::getImageSize(const QString &pathToImage) const
+{
+    QFile file(pathToImage);
+    if (file.exists()) {
+        auto size = QFileInfo(pathToImage).size();
+        if (size <= 100000) {
+            return QString::number(static_cast<double>(size / 1000), 'f', 1)
+                       .replace(".", ",") +
+                   QString(" kB");
+        } else {
+            return QString::number(static_cast<double>(size / 1e6), 'f', 1)
+                       .replace(".", ",") +
+                   QString(" MB");
+        }
+    }
+    return QString();
+}
+
 QString Logic::getImageCreateDate(const QString &pathToImage) const
 {
     QFile file(pathToImage);
     if (file.exists()) {
         QDateTime datetime = QFileInfo(pathToImage).created();
         file.close();
-        return datetime.toString("ddd MMMM d yyyy") + " " +
+        return datetime.toString("ddd MMMM d yyyy") + ", " +
                datetime.toString("hh:mm:ss");
     }
     return QString();
@@ -107,6 +134,17 @@ void Logic::convertToPDF(const QString &pathToFile) const
         QRect(0, 0, writer.logicalDpiX() * 8, writer.logicalDpiY() * 10),
         QPixmap(pathToFile));
     painter.end();
+
+    QString newPdfFileName =
+        QStandardPaths::displayName(QStandardPaths::DocumentsLocation) + "/" +
+        QFileInfo(pdfFileName).fileName();
+    QFile file(pdfFileName);
+    try { file.rename(newPdfFileName); }
+    catch (const std::exception &e)
+    {
+        qWarning("Unable to rename file %s\n%s", qPrintable(pdfFileName),
+                 qPrintable(e.what()));
+    }
 }
 
 void Logic::rotateImage(const QString &pathToImage) const
