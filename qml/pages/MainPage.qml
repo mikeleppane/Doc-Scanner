@@ -60,6 +60,7 @@ Page {
         }
         z: 20
     }
+
     Item {
         id: cameraOutput
         width: Screen.width
