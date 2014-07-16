@@ -48,7 +48,7 @@ Page {
             font.pixelSize: Theme.fontSizeMedium
             color: "white"
             text: "<style>a:link { color: " + Theme.highlightColor + "; }</style>" +
-                  "Version 1.1 <br/>" +
+                  "Version 1.2 <br/>" +
                   qsTr('Created by Mikko Leppänen') + '<br/>' +
                   qsTr('The source code is available at %1').
                   arg('<br/> <a href="https://github.com/MikeL83/Doc-Scanner">%1</a>').arg("Project webpage")
