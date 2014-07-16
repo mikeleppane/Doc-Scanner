@@ -32,7 +32,9 @@ OTHER_FILES += qml/harbour-docscanner.qml \
     qml/pages/content/Marker.qml \
     qml/pages/ImagesPage.qml \
     qml/pages/scripts/DocScannerDB.js \
-    qml/pages/ScannedImagesPage.qml
+    qml/pages/ScannedImagesPage.qml \
+    qml/pages/imagehandler.py \
+    qml/pages/scripts/componentCreation.js
 
 # to disable building translations every time, comment out the
 # following CONFIG line
