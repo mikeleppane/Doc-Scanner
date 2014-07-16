@@ -17,6 +17,7 @@ public:
                                const QString &) const;
     Q_INVOKABLE int getImageWidth(const QString &) const;
     Q_INVOKABLE int getImageHeight(const QString &) const;
+    Q_INVOKABLE QString getImageSize(const QString &) const;
     Q_INVOKABLE QString getImageCreateDate(const QString &) const;
     Q_INVOKABLE void sendEmail() const;
     Q_INVOKABLE void convertToPDF(const QString &) const;
