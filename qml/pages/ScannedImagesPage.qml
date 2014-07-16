@@ -71,19 +71,27 @@ Page {
                     right: parent.right
                     rightMargin: Theme.paddingLarge
                 }
-                Label {
-                    width: imagepage.width
-                    text: logic.getImageWidth(path) + " x " + logic.getImageHeight(path) + " px"
-                    font.pixelSize: Theme.fontSizeSmall
-                    color: Theme.highlightColor
-                    elide: Text.ElideRight
+                Row {
+                    spacing: img.width - (l1.width + l2.width)
+                    width: imagepage.width / 2
+                    Label {
+                        id: l1
+                        text: logic.getImageWidth(path) + " x " + logic.getImageHeight(path) + " px"
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.secondaryColor
+                    }
+                    Label {
+                        id: l2
+                        text: logic.getImageSize(path)
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.secondaryColor
+                    }
                 }
                 Label {
                     width: imagepage.width
                     text: logic.getImageCreateDate(path)
                     font.pixelSize: Theme.fontSizeSmall
-                    color: Theme.highlightColor
-                    elide: Text.ElideRight
+                    color: Theme.secondaryColor
                 }
             }
             Label {
@@ -94,11 +102,13 @@ Page {
                     right: parent.right
                     rightMargin: Theme.paddingLarge
                 }
+                opacity: 0.5
                 width: imagepage.width
                 text: path
                 font.pixelSize: Theme.fontSizeSmall
-                color: Theme.highlightColor
-                elide: Text.ElideRight
+                color: Theme.secondaryColor
+                //elide: Text.ElideRight
+                wrapMode: Text.WrapAnywhere
             }
             onClicked: {
                 onClicked: pageStack.push(Qt.resolvedUrl("ImagePage.qml"),{"path": path,
@@ -124,8 +134,8 @@ Page {
             if (imageModel.count !== 0) imageModel.clear();
             images = DB.getImages();
             var i = 0, count = images.length;
-            for (i; i < count; i++) {
-                imageModel.append({"path": images[i].path});
+            for (; count > 0; count--) {
+                imageModel.append({"path": images[count - 1].path});
             }
          }
     }
