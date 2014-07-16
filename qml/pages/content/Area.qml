@@ -18,6 +18,7 @@ Item {
                      parseInt(Math.abs(canvas.circle2LastY - canvas.circle3LastY))
 
     property string circleFillStyleOff: 'transparent'
+
     property int circle1LineW: 2
     property int circle2LineW: 2
     property int circle3LineW: 2
@@ -27,6 +28,19 @@ Item {
     property int line2LineW: 2
     property int line3LineW: 2
     property int line4LineW: 2
+
+    property bool circle1Pressed: false
+    property bool circle2Pressed: false
+    property bool circle3Pressed: false
+    property bool circle4Pressed: false
+
+    property bool line1Pressed: false
+    property bool line2Pressed: false
+    property bool line3Pressed: false
+    property bool line4Pressed: false
+
+
+    z: 10
 
     Canvas {
         id: canvas
@@ -125,8 +139,6 @@ Item {
             cxtCircle4.stroke();
         }
 
-        opacity: 0.5
-
         MouseArea {
             id: area
             anchors.fill: parent
@@ -134,119 +146,148 @@ Item {
                 switch (findCircle(mouseX, mouseY)) {
                     case 1:
                         circle1LineW *= 4
+                        circle1Pressed = true;
+                        circle2Pressed = false;
+                        circle3Pressed = false;
+                        circle4Pressed = false;
+                        line1Pressed = false;
+                        line2Pressed = false;
+                        line3Pressed = false;
+                        line4Pressed = false;
                         break;
                     case 2:
                         circle2LineW *= 4
+                        circle2Pressed = true;
+                        circle1Pressed = false;
+                        circle3Pressed = false;
+                        circle4Pressed = false;
+                        line1Pressed = false;
+                        line2Pressed = false;
+                        line3Pressed = false;
+                        line4Pressed = false;
                         break;
                     case 3:
                         circle3LineW *= 4
+                        circle3Pressed = true;
+                        circle2Pressed = false;
+                        circle1Pressed = false;
+                        circle4Pressed = false;
+                        line1Pressed = false;
+                        line2Pressed = false;
+                        line3Pressed = false;
+                        line4Pressed = false;
                         break;
                     case 4:
                         circle4LineW *= 4
+                        circle4Pressed = true;
+                        circle2Pressed = false;
+                        circle3Pressed = false;
+                        circle1Pressed = false;
+                        line1Pressed = false;
+                        line2Pressed = false;
+                        line3Pressed = false;
+                        line4Pressed = false;
                         break;
                 }
                 switch (findLine(mouseX, mouseY)) {
                     case 1:
                         line1LineW *= 4
+                        line1Pressed = true;
+                        line2Pressed = false;
+                        line3Pressed = false;
+                        line4Pressed = false;
+                        circle1Pressed = false;
+                        circle2Pressed = false;
+                        circle3Pressed = false;
+                        circle4Pressed = false;
                         break;
                     case 2:
                         line2LineW *= 4
+                        line2Pressed = true;
+                        line1Pressed = false;
+                        line3Pressed = false;
+                        line4Pressed = false;
+                        circle1Pressed = false;
+                        circle2Pressed = false;
+                        circle3Pressed = false;
+                        circle4Pressed = false;
                         break;
                     case 3:
                         line3LineW *= 4
+                        line3Pressed = true;
+                        line2Pressed = false;
+                        line1Pressed = false;
+                        line4Pressed = false;
+                        circle1Pressed = false;
+                        circle2Pressed = false;
+                        circle3Pressed = false;
+                        circle4Pressed = false;
                         break;
                     case 4:
                         line4LineW *= 4
+                        line4Pressed = true;
+                        line2Pressed = false;
+                        line3Pressed = false;
+                        line1Pressed = false;
+                        circle1Pressed = false;
+                        circle2Pressed = false;
+                        circle3Pressed = false;
+                        circle4Pressed = false;
                         break;
                 }
 
             }
             onMouseXChanged: {
                 //Vars.CANBACKNAVIGATE = false;
-                switch (findCircle(mouseX, mouseY)) {
-                    case 1:
-                        canvas.circle1LastX = mouseX;
-                        //canvas.circle1LastY = mouseY;
-                        break;
-
-                    case 2:
-                        canvas.circle2LastX = mouseX;
-                        //canvas.circle2LastY = mouseY;
-                        break;
-                    case 3:
-                        canvas.circle3LastX = mouseX;
-                        //canvas.circle3LastY = mouseY;
-                        break;
-
-                    case 4:
-                        canvas.circle4LastX = mouseX;
-                        //canvas.circle4LastY = mouseY;
-                        break;
+                if (circle1Pressed) {
+                    canvas.circle1LastX = mouseX;
+                } else if (circle2Pressed) {
+                    canvas.circle2LastX = mouseX;
+                } else if (circle3Pressed) {
+                    canvas.circle3LastX = mouseX;
+                } else if (circle4Pressed) {
+                    canvas.circle4LastX = mouseX;
                 }
-                switch (findLine(mouseX, mouseY)) {
-                    case 1:
-                        canvas.circle1LastY = mouseY;
-                        canvas.circle2LastY = mouseY;
-                        break;
 
-                    case 2:
-                        canvas.circle2LastX = mouseX;
-                        canvas.circle3LastX = mouseX;
-                        break;
-                    case 3:
-                        canvas.circle3LastY = mouseY;
-                        canvas.circle4LastY = mouseY;
-                        break;
-
-                    case 4:
-                        canvas.circle4LastX = mouseX;
-                        canvas.circle1LastX = mouseX;
-                        break;
+                if (line1Pressed) {
+                    canvas.circle1LastY = mouseY;
+                    canvas.circle2LastY = mouseY;
+                } else if (line2Pressed) {
+                    canvas.circle2LastX = mouseX;
+                    canvas.circle3LastX = mouseX;
+                } else if (line3Pressed) {
+                    canvas.circle3LastY = mouseY;
+                    canvas.circle4LastY = mouseY;
+                } else if (line4Pressed) {
+                    canvas.circle4LastX = mouseX;
+                    canvas.circle1LastX = mouseX;
                 }
             }
 
             onMouseYChanged: {
                 //Vars.CANBACKNAVIGATE = false;
-                switch (findCircle(mouseX, mouseY)) {
-                    case 1:
-                        //canvas.circle1LastX = mouseX;
-                        canvas.circle1LastY = mouseY;
-                        break;
-
-                    case 2:
-                        //canvas.circle2LastX = mouseX;
-                        canvas.circle2LastY = mouseY;
-                        break;
-                    case 3:
-                        //canvas.circle3LastX = mouseX;
-                        canvas.circle3LastY = mouseY;
-                        break;
-
-                    case 4:
-                        //canvas.circle4LastX = mouseX;
-                        canvas.circle4LastY = mouseY;
-                        break;
+                if (circle1Pressed) {
+                    canvas.circle1LastY = mouseY;
+                } else if (circle2Pressed) {
+                    canvas.circle2LastY = mouseY;
+                } else if (circle3Pressed) {
+                    canvas.circle3LastY = mouseY;
+                } else if (circle4Pressed) {
+                    canvas.circle4LastY = mouseY;
                 }
-                switch (findLine(mouseX, mouseY)) {
-                    case 1:
-                        canvas.circle1LastY = mouseY;
-                        canvas.circle2LastY = mouseY;
-                        break;
 
-                    case 2:
-                        canvas.circle2LastX = mouseX;
-                        canvas.circle3LastX = mouseX;
-                        break;
-
-                    case 3:
-                        canvas.circle3LastY = mouseY;
-                        canvas.circle4LastY = mouseY;
-                        break;
-
-                    case 4:
-                        canvas.circle4LastX = mouseX;
-                        canvas.circle1LastX = mouseX;
-                        break;
+                if (line1Pressed) {
+                    canvas.circle1LastY = mouseY;
+                    canvas.circle2LastY = mouseY;
+                } else if (line2Pressed) {
+                    canvas.circle2LastX = mouseX;
+                    canvas.circle3LastX = mouseX;
+                } else if (line3Pressed) {
+                    canvas.circle3LastY = mouseY;
+                    canvas.circle4LastY = mouseY;
+                } else if (line4Pressed) {
+                    canvas.circle4LastX = mouseX;
+                    canvas.circle1LastX = mouseX;;
                 }
             }
 
@@ -263,6 +304,7 @@ Item {
             }
             onReleased: {
                 resetLineW();
+                line1Pressed = false;
             }
         }
     }
@@ -290,13 +332,13 @@ Item {
         */
 
         var circleArray = [Math.sqrt(Math.pow(canvas.circle1LastX - x,2) +
-                                 Math.pow(canvas.circle1LastY - y,2)) <= canvas.radius + 5,
-            Math.sqrt(Math.pow(canvas.circle2LastX - x,2) +
-                                 Math.pow(canvas.circle2LastY - y,2)) <= canvas.radius + 5,
-            Math.sqrt(Math.pow(canvas.circle3LastX - x,2) +
-                                 Math.pow(canvas.circle3LastY - y,2)) <= canvas.radius + 5,
-            Math.sqrt(Math.pow(canvas.circle4LastX - x,2) +
-                                 Math.pow(canvas.circle4LastY - y,2)) <= canvas.radius + 5
+                           Math.pow(canvas.circle1LastY - y,2)) <= canvas.radius + 5,
+                           Math.sqrt(Math.pow(canvas.circle2LastX - x,2) +
+                           Math.pow(canvas.circle2LastY - y,2)) <= canvas.radius + 5,
+                           Math.sqrt(Math.pow(canvas.circle3LastX - x,2) +
+                           Math.pow(canvas.circle3LastY - y,2)) <= canvas.radius + 5,
+                           Math.sqrt(Math.pow(canvas.circle4LastX - x,2) +
+                           Math.pow(canvas.circle4LastY - y,2)) <= canvas.radius + 5
         ];
 
         return circleArray.indexOf(true) + 1;
@@ -305,44 +347,33 @@ Item {
     function findLine(x,y) {
 
         var lineArray = [Math.sqrt(Math.pow(canvas.circle1LastX - x,2) +
-                                   Math.pow(canvas.circle1LastY - y,2)) > canvas.radius + 10 &&
+                         Math.pow(canvas.circle1LastY - y,2)) > canvas.radius + 10 &&
                          Math.sqrt(Math.pow(canvas.circle2LastX - x,2) +
-                                   Math.pow(canvas.circle2LastY - y,2)) > canvas.radius + 10 &&
+                          Math.pow(canvas.circle2LastY - y,2)) > canvas.radius + 10 &&
                          calculatePointLineDistance(x,y,1) < 20,
                          Math.sqrt(Math.pow(canvas.circle2LastX - x,2) +
-                                                  Math.pow(canvas.circle2LastY - y,2)) > canvas.radius + 10 &&
-                                                  Math.sqrt(Math.pow(canvas.circle3LastX - x,2) +
-                                                  Math.pow(canvas.circle3LastY - y,2)) > canvas.radius + 10 &&
-                                                  calculatePointLineDistance(x,y,2) < 20,
+                         Math.pow(canvas.circle2LastY - y,2)) > canvas.radius + 10 &&
                          Math.sqrt(Math.pow(canvas.circle3LastX - x,2) +
-                                                            Math.pow(canvas.circle3LastY - y,2)) > canvas.radius + 10 &&
-                                                  Math.sqrt(Math.pow(canvas.circle4LastX - x,2) +
-                                                            Math.pow(canvas.circle4LastY - y,2)) > canvas.radius + 10 &&
-                                                  calculatePointLineDistance(x,y,3) < 20,
+                         Math.pow(canvas.circle3LastY - y,2)) > canvas.radius + 10 &&
+                         calculatePointLineDistance(x,y,2) < 20,
+                         Math.sqrt(Math.pow(canvas.circle3LastX - x,2) +
+                         Math.pow(canvas.circle3LastY - y,2)) > canvas.radius + 10 &&
                          Math.sqrt(Math.pow(canvas.circle4LastX - x,2) +
-                                                            Math.pow(canvas.circle4LastY - y,2)) > canvas.radius + 10 &&
-                                                  Math.sqrt(Math.pow(canvas.circle1LastX - x,2) +
-                                                            Math.pow(canvas.circle1LastY - y,2)) > canvas.radius + 10 &&
-                                                  calculatePointLineDistance(x,y,4) < 20
+                         Math.pow(canvas.circle4LastY - y,2)) > canvas.radius + 10 &&
+                         calculatePointLineDistance(x,y,3) < 20,
+                         Math.sqrt(Math.pow(canvas.circle4LastX - x,2) +
+                         Math.pow(canvas.circle4LastY - y,2)) > canvas.radius + 10 &&
+                         Math.sqrt(Math.pow(canvas.circle1LastX - x,2) +
+                         Math.pow(canvas.circle1LastY - y,2)) > canvas.radius + 10 &&
+                         calculatePointLineDistance(x,y,4) < 20
                          ];
 
         return lineArray.indexOf(true) + 1;
     }
 
-    function nullifyPoints() {
-        canvas.radius = 0;
-        canvas.circle1LastX = 0;
-        canvas.circle1LastY = 0;
-        canvas.circle2LastX = 0;
-        canvas.circle2LastY = 0;
-        canvas.circle3LastX = 0;
-        canvas.circle3LastY = 0;
-        canvas.circle4LastX = 0;
-        canvas.circle4LastY = 0;
-    }
-
     function resetTouchPoints() {
         canvas.radius = 40;
+        canvas.space = 50;
         canvas.circle1LastX = canvas.radius + canvas.space;
         canvas.circle1LastY = canvas.radius + canvas.space;
         canvas.circle2LastX = canvas.width - canvas.radius * 4 + canvas.space;
@@ -363,7 +394,17 @@ Item {
         line2LineW = 2;
         line3LineW = 2;
         line4LineW = 2;
+
+        circle1Pressed = false;
+        circle2Pressed = false;
+        circle3Pressed = false;
+        circle4Pressed = false;
+        line1Pressed = false;
+        line2Pressed = false;
+        line3Pressed = false;
+        line4Pressed = false;
     }
+
     function calculatePointLineDistance(x, y, lineNum) {
         // d = abs(det(x2 - x1, x1 - x0)) / norm(x2 - x1)
         switch (lineNum) {
