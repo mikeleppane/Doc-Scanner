@@ -1,6 +1,6 @@
 Name: harbour-docscanner
 Summary: Doc Scanner - SailfishOS Application
-Version: 1.1
+Version: 1.2
 Release: 1
 # The contents of the Group field must be one of the groups listed here:
 # http://gitorious.org/meego-developer-tools/spectacle/blobs/master/data/GROUPS
@@ -33,6 +33,12 @@ PkgConfigBR:
 # Runtime dependencies which are not automatically detected
 Requires:
   - sailfishsilica-qt5 >= 0.10.9 
+#  - pyotherside-qml-plugin-python3-qt5
+  - qt5-qtdeclarative-import-multimedia
+  - qt5-qtdeclarative-import-localstorageplugin
+  - libprofile-qt5
+#  - python-imaging
+#  - python3-base
 
 # All installed files
 Files:
