@@ -1,3 +1,22 @@
+/*!
+ *  Doc Scanner - application for Sailfish OS smartphones developed using
+ *  Qt/QML.
+ *  Copyright (C) 2014 Mikko Leppänen
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.0
 import "../scripts/Vars.js" as Vars
 
@@ -6,16 +25,16 @@ Item {
     property alias cHeight: canvas.height
     property alias cWidth: canvas.width
     property alias canvasObj: canvas
-    property int cx: parseInt(canvas.circle1LastX)
-    property int cy: parseInt(canvas.circle1LastY)
-    property int cw: parseInt(Math.abs(canvas.circle1LastX - canvas.circle2LastX)) >
-                     parseInt(Math.abs(canvas.circle3LastX - canvas.circle4LastX)) ?
-                     parseInt(Math.abs(canvas.circle1LastX - canvas.circle2LastX)) :
-                     parseInt(Math.abs(canvas.circle3LastX - canvas.circle4LastX))
-    property int ch: parseInt(Math.abs(canvas.circle1LastY - canvas.circle4LastY)) >
-                     parseInt(Math.abs(canvas.circle2LastY - canvas.circle3LastY)) ?
-                     parseInt(Math.abs(canvas.circle1LastY - canvas.circle4LastY)) :
-                     parseInt(Math.abs(canvas.circle2LastY - canvas.circle3LastY))
+    property int cx: Math.ceil(canvas.circle1LastX)
+    property int cy: Math.ceil(canvas.circle1LastY)
+    property int cw: Math.ceil(Math.abs(canvas.circle1LastX - canvas.circle2LastX)) >
+                     Math.ceil(Math.abs(canvas.circle3LastX - canvas.circle4LastX)) ?
+                     Math.ceil(Math.abs(canvas.circle1LastX - canvas.circle2LastX)) :
+                     Math.ceil(Math.abs(canvas.circle3LastX - canvas.circle4LastX))
+    property int ch: Math.ceil(Math.abs(canvas.circle1LastY - canvas.circle4LastY)) >
+                     Math.ceil(Math.abs(canvas.circle2LastY - canvas.circle3LastY)) ?
+                     Math.ceil(Math.abs(canvas.circle1LastY - canvas.circle4LastY)) :
+                     Math.ceil(Math.abs(canvas.circle2LastY - canvas.circle3LastY))
 
     property string circleFillStyleOff: 'transparent'
 
@@ -38,7 +57,6 @@ Item {
     property bool line2Pressed: false
     property bool line3Pressed: false
     property bool line4Pressed: false
-
 
     z: 10
 
@@ -67,6 +85,37 @@ Item {
         property var cxtCircle4
         property var cxtLine4
 
+        property var cxtDashLine1
+        property var cxtDashLine2
+        property var cxtDashLine3
+        property var cxtDashLine4
+        property var cxtDashLine5
+        property var cxtDashLine6
+
+        property var pointsDashLine11: calculateLineCentralPoint(circle1LastX, circle1LastY,
+                                                                 circle2LastX, circle2LastY);
+        property var pointsDashLine12: calculateLineCentralPoint(circle3LastX, circle3LastY,
+                                                                 circle4LastX, circle4LastY);
+        property var pointsDashLine31: calculateLineCentralPoint(circle1LastX, circle1LastY,
+                                                                 pointsDashLine11[0], pointsDashLine11[1]);
+        property var pointsDashLine32: calculateLineCentralPoint(circle4LastX, circle4LastY,
+                                                                 pointsDashLine12[0], pointsDashLine12[1]);
+        property var pointsDashLine41: calculateLineCentralPoint(pointsDashLine11[0], pointsDashLine11[1],
+                                                                 circle2LastX, circle2LastY);
+        property var pointsDashLine42: calculateLineCentralPoint(pointsDashLine12[0], pointsDashLine12[1],
+                                                                 circle3LastX, circle3LastY);
+        property var pointsDashLine21: calculateLineCentralPoint(canvas.circle1LastX, canvas.circle1LastY,
+                                                                 canvas.circle4LastX, canvas.circle4LastY);
+        property var pointsDashLine22: calculateLineCentralPoint(canvas.circle2LastX, canvas.circle2LastY,
+                                                                 canvas.circle3LastX, canvas.circle3LastY);
+        property var pointsDashLine51: calculateLineCentralPoint(canvas.circle1LastX, canvas.circle1LastY,
+                                                                 pointsDashLine21[0], pointsDashLine21[1]);
+        property var pointsDashLine52: calculateLineCentralPoint(canvas.circle2LastX, canvas.circle2LastY,
+                                                                 pointsDashLine22[0], pointsDashLine22[1]);
+        property var pointsDashLine61: calculateLineCentralPoint(pointsDashLine21[0], pointsDashLine21[1],
+                                                                 canvas.circle4LastX, canvas.circle4LastY);
+        property var pointsDashLine62: calculateLineCentralPoint(pointsDashLine22[0], pointsDashLine22[1],
+                                                                 canvas.circle3LastX, canvas.circle3LastY);
         smooth: true
         onPaint: {
             cxtLine1 = canvas.getContext('2d')
@@ -137,6 +186,38 @@ Item {
             cxtCircle4.lineWidth = circle4LineW;
             cxtCircle4.strokeStyle = '#003399';
             cxtCircle4.stroke();
+
+            cxtDashLine1 = canvas.getContext('2d');
+            cxtDashLine2 = canvas.getContext('2d');
+            cxtDashLine3 = canvas.getContext('2d');
+            cxtDashLine4 = canvas.getContext('2d');
+            cxtDashLine5 = canvas.getContext('2d');
+            cxtDashLine6 = canvas.getContext('2d');
+
+            createDashedLine(cxtDashLine1, pointsDashLine11[0],
+                             pointsDashLine11[1], pointsDashLine12[0],
+                             pointsDashLine12[1], 5);
+
+            createDashedLine(canvas.cxtDashLine2, pointsDashLine21[0],
+                             pointsDashLine21[1], pointsDashLine22[0],
+                             pointsDashLine22[1], 5);
+
+            createDashedLine(canvas.cxtDashLine3, pointsDashLine31[0],
+                             pointsDashLine31[1], pointsDashLine32[0],
+                             pointsDashLine32[1], 5);
+
+            createDashedLine(canvas.cxtDashLine4, pointsDashLine41[0],
+                             pointsDashLine41[1], pointsDashLine42[0],
+                             pointsDashLine42[1], 5);
+
+            createDashedLine(canvas.cxtDashLine5, pointsDashLine51[0],
+                             pointsDashLine51[1], pointsDashLine52[0],
+                             pointsDashLine52[1], 5);
+
+            createDashedLine(canvas.cxtDashLine6, pointsDashLine61[0],
+                             pointsDashLine61[1], pointsDashLine62[0],
+                             pointsDashLine62[1], 5);
+
         }
 
         MouseArea {
@@ -238,7 +319,6 @@ Item {
 
             }
             onMouseXChanged: {
-                //Vars.CANBACKNAVIGATE = false;
                 if (circle1Pressed) {
                     canvas.circle1LastX = mouseX;
                 } else if (circle2Pressed) {
@@ -265,7 +345,6 @@ Item {
             }
 
             onMouseYChanged: {
-                //Vars.CANBACKNAVIGATE = false;
                 if (circle1Pressed) {
                     canvas.circle1LastY = mouseY;
                 } else if (circle2Pressed) {
@@ -287,7 +366,7 @@ Item {
                     canvas.circle4LastY = mouseY;
                 } else if (line4Pressed) {
                     canvas.circle4LastX = mouseX;
-                    canvas.circle1LastX = mouseX;;
+                    canvas.circle1LastX = mouseX;
                 }
             }
 
@@ -300,6 +379,12 @@ Item {
                 canvas.cxtLine3.clearRect(0, 0, canvas.width, canvas.height);
                 canvas.cxtCircle4.clearRect(0, 0, canvas.width, canvas.height);
                 canvas.cxtLine4.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.cxtDashLine1.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.cxtDashLine2.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.cxtDashLine3.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.cxtDashLine4.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.cxtDashLine5.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.cxtDashLine6.clearRect(0, 0, canvas.width, canvas.height);
                 canvas.requestPaint();
             }
             onReleased: {
@@ -433,5 +518,49 @@ Item {
                                                         Math.pow(canvas.circle1LastY - canvas.circle4LastY,2))
              return d4;
         }
+    }
+
+    function createDashedLine(cxt, x1, y1, x2, y2, dashLen) {
+        cxt.beginPath();
+        cxt.moveTo(x1, y1);
+
+        var dX = x2 - x1;
+        var dY = y2 - y1;
+        var dashes = Math.floor(Math.sqrt(dX * dX + dY * dY) / dashLen);
+        var dashX = dX / dashes;
+        var dashY = dY / dashes;
+
+        var q = 0;
+        while (q++ < dashes) {
+            x1 += dashX;
+            y1 += dashY;
+            cxt[q % 2 == 0 ? 'moveTo' : 'lineTo'](x1, y1);
+        }
+        cxt[q % 2 == 0 ? 'moveTo' : 'lineTo'](x2, y2);
+
+        cxt.lineWidth = 2;
+        cxt.strokeStyle = '#FFC459';
+        cxt.stroke();
+        cxt.closePath();
+    }
+
+    function calculateLineCentralPoint(x1, y1, x2, y2) {
+
+        var Px = 0;
+        var Py = 0;
+        var dX = x2 - x1;
+        var dY = y2 - y1;
+
+        if (dX < 0) {
+             Px = x1 - Math.floor(Math.abs(x2 - x1) / 2)
+        } else {
+            Px = x1 + Math.floor(Math.abs(x2 - x1) / 2)
+        }
+        if (dY < 0) {
+            Py = y1 - Math.floor(Math.abs(y2 - y1) / 2)
+        } else {
+            Py = y1 + Math.floor(Math.abs(y2 - y1) / 2)
+        }
+        return [Px, Py];
     }
 }

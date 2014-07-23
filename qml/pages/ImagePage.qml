@@ -1,3 +1,22 @@
+/*!
+ *  Doc Scanner - application for Sailfish OS smartphones developed using
+ *  Qt/QML.
+ *  Copyright (C) 2014 Mikko Leppänen
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "content"
@@ -10,7 +29,7 @@ Page {
     id: page
     //width: Screen.width
     //height: Screen.height
-    allowedOrientations: Orientation.Landscape | Orientation.Portrait
+    allowedOrientations: Orientation.Landscape
     backNavigation: false
     property string path: null
     property bool isScannedImage: false
@@ -37,14 +56,13 @@ Page {
                         areaObj.destroy();
                         areaObj = null;
                     }
-                    var cHeight = page.orientation === Orientation.Portrait ? Screen.width : Screen.height
-                    var cWidth = page.orientation === Orientation.Portrait ? Screen.height : Screen.width
 
-                    areaObj = Comp.createAreaObject(cHeight, cWidth);
+                    areaObj = Comp.createAreaObject(Screen.height, Screen.width);
                     areaObj.resetTouchPoints();
                     options.visible = false;
                     scanButton.visible = true
                     page.backNavigation = false;
+                    img.fillMode = Image.Stretch
                 }
             }
             MenuItem {
@@ -93,21 +111,18 @@ Page {
         anchors.fill: parent
         source: path
         asynchronous: true
-        sourceSize.width: logic.getImageHeight(path) > logic.getImageWidth(path)
-                          ? logic.getImageHeight(path) : logic.getImageWidth(path)
-        sourceSize.height: logic.getImageWidth(path) > logic.getImageHeight(path)
-                           ? logic.getImageWidth(path): logic.getImageHeight(path)
+        sourceSize.width: logic.getImageWidth(path)
+        sourceSize.height: logic.getImageHeight(path)
         smooth: true
-        fillMode: Image.PreserveAspectFit
+
+        Component.onCompleted:  {
+            if (logic.getImageHeight(path) < 540 || logic.getImageWidth(path) < 960) {
+                fillMode = Image.Stretch
+            } else {
+                fillMode = Image.PreserveAspectFit
+            }
+        }
     }
-    /*
-    Area {
-        id: area
-        cHeight: Screen.height
-        cWidth: Screen.width
-        z: 10
-    }
-    */
 
     IconButton {
         id: scanButton
@@ -116,17 +131,19 @@ Page {
             bottomMargin: Theme.paddingMedium
             horizontalCenter: parent.horizontalCenter
         }
+        scale: 1.5
         icon.source: "image://theme/icon-camera-shutter-release"
 
         onClicked: {
             path = logic.scanImage(areaObj.cx, areaObj.cy, areaObj.cw, areaObj.ch, path);
+
             if (path !== "") {
                 DB.addImage(path);
+                myImageModel.addImage(path);
                 img.source = path
-                img.sourceSize.width = logic.getImageHeight(path) > logic.getImageWidth(path)
-                        ? logic.getImageHeight(path) : logic.getImageWidth(path)
-                img.sourceSize.height = logic.getImageWidth(path) > logic.getImageHeight(path)
-                        ? logic.getImageWidth(path) : logic.getImageHeight(path)
+                img.sourceSize.width = logic.getImageWidth(path)
+                img.sourceSize.height = logic.getImageHeight(path)
+                img.fillMode = Image.PreserveAspectFit
                 if (areaObj !== null) {
                     areaObj.destroy();
                     areaObj = null;
@@ -138,37 +155,38 @@ Page {
         }
         z: 20
     }
-
+    /*
     onOrientationChanged: {
         if (options.visible === false) {
             if (areaObj !== null) {
                 areaObj.destroy();
             }
 
-            var cHeight = isPortrait ? Screen.width : Screen.height
-            var cWidth = isPortrait ? Screen.height : Screen.width
+            var cHeight = page.orientation === Orientation.Portrait ? Screen.width : Screen.height
+            var cWidth = page.orientation === Orientation.Portrait ? Screen.height : Screen.width
 
-            areaObj = Comp.createAreaObject(cWidth, cHeight);
+            areaObj = Comp.createAreaObject(cHeight, cWidth);
 
             areaObj.resetTouchPoints();
             areaObj.resetLineW();
         }
     }
+    */
 
     onStatusChanged: {
         if (status === PageStatus.Activating) {
-            //Vars.CANBACKNAVIGATE = false;
+            if (areaObj !== null) {
+                areaObj.destroy();
+                areaObj = null;
+            }
             if (isScannedImage) {
                 options.visible = true;
                 scanButton.visible = false;
                 page.backNavigation = true;
+                img.fillMode = Image.PreserveAspectFit
             } else {
 
-                if (areaObj !== null) {
-                    areaObj.destroy();
-                    areaObj = null;
-                }
-                areaObj = Comp.createAreaObject(Screen.width, Screen.height);
+                areaObj = Comp.createAreaObject(Screen.height, Screen.width);
                 areaObj.resetTouchPoints();
             }
          }

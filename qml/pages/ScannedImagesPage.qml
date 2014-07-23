@@ -1,3 +1,22 @@
+/*!
+ *  Doc Scanner - application for Sailfish OS smartphones developed using
+ *  Qt/QML.
+ *  Copyright (C) 2014 Mikko Leppänen
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "scripts/DocScannerDB.js" as DB
@@ -29,7 +48,7 @@ Page {
         }
         ViewPlaceholder {
             enabled: imageModel.count === 0
-            text: "No scanned images available"
+            text: qsTr("No scanned images available")
         }
 
         delegate: imageDelegate
@@ -118,7 +137,7 @@ Page {
                 remorse.execute(bgItem, qsTr("Deleting image..."), function() {
                                 var ind = index;
                                 DB.removeImage(path)
-                                logic.removeImage(path);
+                                myImageModel.removeImage(path, ind)
                                 images.splice(index,1);
                                 imageModel.remove(index);
                                 if (ind > 1) {
