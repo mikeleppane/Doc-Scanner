@@ -1,3 +1,22 @@
+/*!
+ *  Doc Scanner - application for Sailfish OS smartphones developed using
+ *  Qt/QML.
+ *  Copyright (C) 2014 Mikko Leppänen
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <QString>
 #include <QFile>
 #include <QFileInfo>
@@ -9,42 +28,65 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMatrix>
-#include <QDir>
-#include <QDirIterator>
 #include <QDateTime>
-#include <QtAlgorithms>
 #include <QPoint>
-#include <QList>
-#include <QImageReader>
-#include <QByteArray>
+#include <QColor>
 #include <QStandardPaths>
-#include <QDebug>
-#include <algorithm>
+#include <QProcess>
+#include <QRegExp>
+#include <QScopedPointer>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QTimer>
+#include <QThreadPool>
+#include <QFuture>
 #include "logic.h"
 
-bool checkIfImageFormatSupported(const QString &path)
+void enhanceImage(QImage &origin, const QString &pathToImage)
 {
-    QList<QByteArray> formats = QImageReader::supportedImageFormats();
-    // std::for_each(formats.begin(), formats.end(), [](QByteArray ba){
-    // ba.toUpper(); });
-    QByteArray suffix(QFileInfo(path).suffix().toLower().toUtf8());
+    QImage newImage(origin);
+    int kernel[3][3] = { { 0, -3, 0 }, { -3, 50, -3 }, { 0, -3, 0 } };
+    int kernelSize = 3;
+    const int kernelDiv2 = kernelSize / 2;
+    int sumKernel = 38;
+    int r, g, b;
+    QColor color;
+    for (int x = kernelDiv2; x < newImage.width() - (kernelDiv2); x++) {
+        for (int y = kernelDiv2; y < newImage.height() - (kernelDiv2); y++) {
 
-    return formats.contains(suffix);
+            r = 0;
+            g = 0;
+            b = 0;
+
+            for (int i = -kernelDiv2; i <= kernelDiv2; i++) {
+                for (int j = -kernelSize / 2; j <= kernelDiv2; j++) {
+                    color = QColor(origin.pixel(x + i, y + j));
+                    r += color.red() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    g += color.green() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    b += color.blue() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                }
+            }
+            r = qBound(0, r / sumKernel, 255);
+            g = qBound(0, g / sumKernel, 255);
+            b = qBound(0, b / sumKernel, 255);
+
+            newImage.setPixel(x, y, qRgb(r, g, b));
+        }
+    }
+    newImage.save(pathToImage);
 }
 
 Logic::Logic(QObject *parent) : QObject(parent) {}
 
 QString Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
-    const
 {
     QFile file(pathToImage);
     if (file.exists()) {
         QImage img;
         img.load(pathToImage);
-        qreal w_factor = img.width() / 960.0;
-        qreal h_factor = img.height() / 540.0;
 
-        // leave some margin around rect
+        qreal h_factor = img.height() / 540.0;
+        qreal w_factor = img.width() / 960.0;
+
         int x_new = x >= 30 ? qRound(static_cast<qreal>(x * w_factor)) - 25
                             : qRound(static_cast<qreal>(x * w_factor));
         int y_new = y >= 30 ? qRound(static_cast<qreal>(y * h_factor)) - 25
@@ -71,7 +113,9 @@ QString Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
                            date.toString("dd-MM-yyyy") + "_" +
                            time.toString("hh:mm:ss") + "." + suffix;
         }
-        img.save(newImageName);
+        QFuture<void> f = QtConcurrent::run(enhanceImage, img, newImageName);
+        f.waitForFinished();
+
         return newImageName;
     }
     return QString();
@@ -161,33 +205,38 @@ void Logic::rotateImage(const QString &pathToImage) const
     }
 }
 
-QStringList Logic::getImages(const QString &path) const
+QString Logic::getVersion() const
 {
-
-    QStringList images;
-    QDir dir(path);
-    dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-    QDirIterator it(dir, QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString imagePath = it.next();
-        if (!QFileInfo(imagePath).isDir() && !images.contains(imagePath) &&
-            checkIfImageFormatSupported(imagePath)) {
-            images.append(imagePath);
+    QScopedPointer<QObject> parent(new QObject(nullptr));
+    QScopedPointer<QProcess> rpm(new QProcess(parent.data()));
+    QStringList args;
+    args << "-qa"
+         << "--queryformat"
+         << "'%{name}-%{version}-%{release}\n'";
+    rpm->start("rpm", args);
+    if (!rpm->waitForStarted()) {
+        return QString();
+    }
+    if (!rpm->waitForFinished()) {
+        return QString();
+    }
+    QString rpms(rpm->readAll());
+    QString packageName = "harbour-docscanner";
+    if (rpms.contains(packageName, Qt::CaseInsensitive)) {
+        QRegExp rx(packageName + "-" + "(\\d+\\.\\d+)");
+        rx.setCaseSensitivity(Qt::CaseInsensitive);
+        int pos = rx.indexIn(rpms);
+        if (pos > -1) {
+            return rx.cap(1);
         }
     }
-    qStableSort(images.begin(), images.end(),
-                [](const QString &path1, const QString &path2)->bool {
-        return QFileInfo(path1).created() > QFileInfo(path2).created();
-    });
-
-    return images;
+    return QString();
 }
 
-void Logic::removeImage(const QString &filePath) const
+void Logic::checkIfThreadIsDone()
 {
-    QFile file(filePath);
-    if (file.exists()) {
-        file.remove();
+    if (QThreadPool::globalInstance()->activeThreadCount()) {
+        QTimer::singleShot(100, this, SLOT(checkIfThreadIsDone()));
     }
 }
 
