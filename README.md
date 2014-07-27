@@ -35,6 +35,6 @@ Doc Scanner license:
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-![Pic](scanpicforGithub.jpg?raw=true "")  
+![Pic](scanpicforGithub.png?raw=true "")  
 
 
