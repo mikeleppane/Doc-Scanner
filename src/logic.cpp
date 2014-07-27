@@ -41,6 +41,7 @@
 #include <QFuture>
 #include "logic.h"
 
+// algorithm for sharpening the image
 void enhanceImage(QImage &origin, const QString &pathToImage)
 {
     QImage newImage(origin);
@@ -175,6 +176,7 @@ QString Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
                            date.toString("dd-MM-yyyy") + "_" +
                            time.toString("hh:mm:ss") + "." + suffix;
         }
+        // run enhancement function in another thread
         QFuture<void> f = QtConcurrent::run(enhanceImage, img, newImageName);
         f.waitForFinished();
 
