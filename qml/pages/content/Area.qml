@@ -387,9 +387,13 @@ Item {
                 canvas.cxtDashLine6.clearRect(0, 0, canvas.width, canvas.height);
                 canvas.requestPaint();
             }
+
             onReleased: {
                 resetLineW();
                 line1Pressed = false;
+                line2Pressed = false;
+                line3Pressed = false;
+                line4Pressed = false;
             }
         }
     }
