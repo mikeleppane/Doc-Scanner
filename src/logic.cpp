@@ -45,31 +45,93 @@ void enhanceImage(QImage &origin, const QString &pathToImage)
 {
     QImage newImage(origin);
     int kernel[3][3] = { { 0, -3, 0 }, { -3, 50, -3 }, { 0, -3, 0 } };
-    int kernelSize = 3;
-    const int kernelDiv2 = kernelSize / 2;
-    int sumKernel = 38;
-    int r, g, b;
+    // int kernelSize = 3;
+    constexpr int kernelDiv2 = 1;
+    constexpr int sumKernel = 38;
+    int r1, g1, b1, r2, g2, b2, r3, g3, b3, r4, g4, b4;
     QColor color;
-    for (int x = kernelDiv2; x < newImage.width() - (kernelDiv2); x++) {
-        for (int y = kernelDiv2; y < newImage.height() - (kernelDiv2); y++) {
+    int N1 = (newImage.width() - kernelDiv2) / 4;
+    int N2 = (newImage.height() - kernelDiv2) / 4;
+    for (int x = kernelDiv2; x <= N1; ++x) {
+        for (int y = kernelDiv2; y <= N2; ++y) {
 
-            r = 0;
-            g = 0;
-            b = 0;
+            r1 = 0;
+            g1 = 0;
+            b1 = 0;
 
-            for (int i = -kernelDiv2; i <= kernelDiv2; i++) {
-                for (int j = -kernelSize / 2; j <= kernelDiv2; j++) {
+            for (int i = -kernelDiv2; i <= kernelDiv2; ++i) {
+                for (int j = -kernelDiv2; j <= kernelDiv2; ++j) {
                     color = QColor(origin.pixel(x + i, y + j));
-                    r += color.red() * kernel[kernelDiv2 + i][kernelDiv2 + j];
-                    g += color.green() * kernel[kernelDiv2 + i][kernelDiv2 + j];
-                    b += color.blue() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    r1 += color.red() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    g1 +=
+                        color.green() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    b1 += color.blue() * kernel[kernelDiv2 + i][kernelDiv2 + j];
                 }
             }
-            r = qBound(0, r / sumKernel, 255);
-            g = qBound(0, g / sumKernel, 255);
-            b = qBound(0, b / sumKernel, 255);
+            r1 = qBound(0, r1 / sumKernel, 255);
+            g1 = qBound(0, g1 / sumKernel, 255);
+            b1 = qBound(0, b1 / sumKernel, 255);
 
-            newImage.setPixel(x, y, qRgb(r, g, b));
+            newImage.setPixel(x, y, qRgb(r1, g1, b1));
+
+            r2 = 0;
+            g2 = 0;
+            b2 = 0;
+
+            for (int i = -kernelDiv2; i <= kernelDiv2; ++i) {
+                for (int j = -kernelDiv2; j <= kernelDiv2; ++j) {
+                    color = QColor(origin.pixel(x + N1 + i, y + N2 + j));
+                    r2 += color.red() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    g2 +=
+                        color.green() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    b2 += color.blue() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                }
+            }
+            r2 = qBound(0, r2 / sumKernel, 255);
+            g2 = qBound(0, g2 / sumKernel, 255);
+            b2 = qBound(0, b2 / sumKernel, 255);
+
+            newImage.setPixel(x + N1, y + N2, qRgb(r2, g2, b2));
+
+            r3 = 0;
+            g3 = 0;
+            b3 = 0;
+
+            for (int i = -kernelDiv2; i <= kernelDiv2; ++i) {
+                for (int j = -kernelDiv2; j <= kernelDiv2; ++j) {
+                    color =
+                        QColor(origin.pixel(x + 2 * N1 + i, y + 2 * N2 + j));
+                    r3 += color.red() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    g3 +=
+                        color.green() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    b3 += color.blue() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                }
+            }
+            r3 = qBound(0, r3 / sumKernel, 255);
+            g3 = qBound(0, g3 / sumKernel, 255);
+            b3 = qBound(0, b3 / sumKernel, 255);
+
+            newImage.setPixel(x + 2 * N1, y + 2 * N2, qRgb(r3, g3, b3));
+
+            r4 = 0;
+            g4 = 0;
+            b4 = 0;
+
+            for (int i = -kernelDiv2; i <= kernelDiv2; ++i) {
+                for (int j = -kernelDiv2; j <= kernelDiv2; ++j) {
+                    color = QColor(
+                        origin.pixel(x + 3 * N1 + i - 1, y + 3 * N2 + j - 1));
+                    r4 += color.red() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    g4 +=
+                        color.green() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                    b4 += color.blue() * kernel[kernelDiv2 + i][kernelDiv2 + j];
+                }
+            }
+            r4 = qBound(0, r4 / sumKernel, 255);
+            g4 = qBound(0, g4 / sumKernel, 255);
+            b4 = qBound(0, b4 / sumKernel, 255);
+
+            newImage.setPixel(x + 3 * N1, y + 3 * N2, qRgb(r4, g4, b4));
         }
     }
     newImage.save(pathToImage);
