@@ -1,0 +1,24 @@
+* Sun Jul 27 2014 Mikko Leppänen <mleppan23@gmail.com> 1.4-1
+- Improved performance(~ 3x) when generating scan
+- Zooming can now be done directly on a viewfinder
+
+* Sun Jul 21 2014 Mikko Leppänen <mleppan23@gmail.com> 1.3-1
+- New icon (massive thanks to TMavica)
+- Improvements on scan area
+- Landscape orientation is now allowed on scan page
+- Scanned images are modified by an algorithm to enhance the sharpness of the image
+(yes, there's more room for an improvement but this is a start)
+- Minor UI changes
+
+* Sun Jul 9 2014 Mikko Leppänen <mleppan23@gmail.com> 1.2-1
+- Improvements on scan area and its movement
+- Bug fixed: scan area displayed wrong when device orientation changed
+- PDF files are now saved directly to Documents folder
+- Scanned images are arranged in chronological order
+- Some UI changes
+
+* Sun Jul 6 2014 Mikko Leppänen <mleppan23@gmail.com> 1.1-1
+
+* Sun Jul 3 2014 Mikko Leppänen <mleppan23@gmail.com> 1.0-1
+- First release
+
