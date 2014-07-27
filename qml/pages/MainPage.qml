@@ -27,10 +27,16 @@ import "content"
 
 Page {
     id: page
+    allowedOrientations: Orientation.Portrait
 
-    //allowedOrientations: Orientation.Landscape
+    property real refPoint
+
+    function calculateTouchPointDistance(p1, p2) {
+        return Math.sqrt(Math.pow(p1.x - p2.x,2) + Math.pow(p1.y - p2.y,2))
+    }
 
     SilicaFlickable {
+        id: pulldownmenu
         anchors.fill: parent
         anchors.margins: 0
         PullDownMenu {
@@ -49,17 +55,32 @@ Page {
         }
         z: 20
     }
-    Item {
-        id: cameraOutput   
+
+    ZoomItem {
+        id: zoomItem
         width: Screen.width
-        height: Screen.height
+        anchors {
+            top: cameraOutput.top
+            horizontalCenter: cameraOutput.horizontalCenter
+        }
+        transform: Translate {y: 175}
+        visible: false
+        z: 30
+    }
+
+    Item {
+        id: cameraOutput
+        x: 0
+        y: 0
+        anchors.fill: parent
+        width: 540
+        height: 960
 
         VideoOutput {
             id: vOut
-            anchors.fill: parent
+            anchors.fill: cameraOutput
             source: camera
             focus: visible
-
             /*
             Does not work.
             Cannot recognize Camera.focus.focusZones
@@ -84,7 +105,45 @@ Page {
             }
             */
 
-            //orientation: page.orientation === Orientation.Portrait ? 0 : 90 GStreamer
+            MultiPointTouchArea {
+                id: touchArea
+                anchors.fill: parent
+                        touchPoints: [
+                            TouchPoint { id: point1 },
+                            TouchPoint { id: point2 }
+                        ]
+                        property var p1: {"x": point1.x,
+                                          "y": point1.y}
+                        property var p2: {"x": point2.x,
+                                          "y": point2.y}
+
+
+                onPressed: {
+                    pulldownmenu.enabled = false;
+                    zoomItem.visible = true;
+                    marker.enabled = false;
+                    refPoint = calculateTouchPointDistance(p1, p2);
+                }
+                onUpdated: {
+                    if (calculateTouchPointDistance(p1, p2) > refPoint + 4) {
+                        zoomItem.zoomDir = "in"
+                        zoomItem.factor += (camera.maximumDigitalZoom / 12) / (camera.maximumDigitalZoom - 1)
+                        camera.digitalZoom += (camera.maximumDigitalZoom / 12)
+                        refPoint = calculateTouchPointDistance(p1, p2);
+                    } else if (calculateTouchPointDistance(p1, p2) < refPoint - 4) {
+                        zoomItem.zoomDir = "out"
+                        zoomItem.factor -= (camera.maximumDigitalZoom / 12) / (camera.maximumDigitalZoom - 1)
+                        camera.digitalZoom -= (camera.maximumDigitalZoom / 12)
+                        refPoint = calculateTouchPointDistance(p1, p2);
+                    }
+                }
+
+                onReleased: {
+                    pulldownmenu.enabled = true;
+                    zoomItem.visible = false;
+                    marker.enabled = true;
+                }
+            }
         }
 
         Camera {
@@ -95,12 +154,12 @@ Page {
                 focusPointMode: Camera.FocusPointCenter
             }
             flash.mode: Camera.FlashOff
+
         }
     }
-
     Marker {
         id: marker
-        anchors.centerIn: cameraOutput
+        anchors.centerIn: page
         anchors.margins: 0
         z: 10
     }
@@ -110,15 +169,6 @@ Page {
             bottom: parent.bottom
             bottomMargin: Theme.paddingMedium
             horizontalCenter: parent.horizontalCenter
-        }
-        IconButton {
-            id: zoomOut
-            width: page.width / 3
-            icon.source: "image://theme/icon-camera-zoom-out"
-            scale: 1.5
-            onClicked: {
-                camera.digitalZoom -= 0.5
-            }
         }
         IconButton {
             id: cameraButton
@@ -136,18 +186,8 @@ Page {
             }
             */
         }
-        IconButton {
-            id: zoomIn
-            width: page.width / 3
-            icon.source: "image://theme/icon-camera-zoom-in"
-            scale: 1.5
-            onClicked: {
-                camera.digitalZoom += 0.5
-            }
-        }
         z: 30
     }
-
     Connections {
         target: camera.imageCapture
 
