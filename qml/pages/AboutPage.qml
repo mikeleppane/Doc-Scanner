@@ -69,8 +69,8 @@ Page {
             textFormat: Text.RichText;
             font.pixelSize: Theme.fontSizeMedium
             color: "white"
-            text: qsTr("<style>a:link { color: " + Theme.highlightColor + "; }</style>" +
-                       "Version %1 <br/>").arg(Vars.VERSION) +
+            text: "<style>a:link { color: " + Theme.highlightColor + "; }</style>" +
+                  qsTr("Version %1").arg(Vars.VERSION) + "<br/>" +
                   qsTr('Created by Mikko Leppänen') + '<br/>' +
                   qsTr('The source code is available at %1').
                   arg('<br/> <a href="https://github.com/MikeL83/Doc-Scanner">%1</a>').arg("Project webpage")
