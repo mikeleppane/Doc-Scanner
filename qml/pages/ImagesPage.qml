@@ -22,20 +22,13 @@ import Sailfish.Silica 1.0
 import "scripts/DocScannerDB.js" as DB
 //import "../pages/scripts/Vars.js" as Vars
 
+/**
+ * @brief Page to display all the images stored in the device
+ */
 Page {
     id: imagepage
     width: Screen.width
     height: Screen.height
-
-    property var images: []
-
-    /*
-    BusyIndicator {
-        anchors.centerIn: parent
-        running: gridView.model.status === ListModel.Loading
-        size: BusyIndicatorSize.Medium
-    }
-    */
 
     SilicaGridView {
         id: gridView
@@ -100,4 +93,10 @@ Page {
             RemorseItem { id: remorse;}
         }
     }
+    onStatusChanged: {
+        if (status === PageStatus.Activating) {
+            myImageModel.addImages(StandardPaths.pictures);
+         }
+    }
+
 }
