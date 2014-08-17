@@ -19,21 +19,34 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import QtSensors 5.0
 import "content"
 import "scripts/Vars.js" as Vars
 import "scripts/DocScannerDB.js" as DB
 import "scripts/componentCreation.js" as Comp
 // import io.thp.pyotherside 1.2
 
+/**
+* @brief Page to display an image
+*/
 Page {
     id: page
     //width: Screen.width
     //height: Screen.height
     allowedOrientations: Orientation.Landscape
     backNavigation: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property string path: null
+    /**
+     * @brief type:bool Is current image already scanned
+     */
     property bool isScannedImage: false
-    property bool enhance_image: false
+    /**
+     * @brief type:var A variable to store Area.qml object
+     */
     property var areaObj: null
 
     SilicaFlickable {
@@ -56,7 +69,6 @@ Page {
                         areaObj.destroy();
                         areaObj = null;
                     }
-
                     areaObj = Comp.createAreaObject(Screen.height, Screen.width);
                     areaObj.resetTouchPoints();
                     options.visible = false;
@@ -72,7 +84,7 @@ Page {
                         areaObj.destroy();
                         areaObj = null;
                     }
-                    logic.convertToPDF(path);
+                    pageStack.replace(Qt.resolvedUrl("PDFNameDialog.qml"), {"path": path});
                 }
             }
             MenuItem {
@@ -136,8 +148,12 @@ Page {
 
         onClicked: {
             path = logic.scanImage(areaObj.cx, areaObj.cy, areaObj.cw, areaObj.ch, path);
-
+            orientationSensor.active = false;
+            rotationSensor.active = false;
             if (path !== "") {
+                if (Vars.ISMULTIPAGEENABLED) {
+                    logic.setNewPage(path, Vars.ISPORTRAIT);
+                }
                 DB.addImage(path);
                 myImageModel.addImage(path);
                 img.source = path
@@ -154,6 +170,31 @@ Page {
             }
         }
         z: 20
+    }
+    OrientationSensor {
+        id: orientationSensor
+        active: false
+
+        onReadingChanged: {
+            if (reading.orientation === OrientationReading.TopUp ||
+                reading.orientation === OrientationReading.TopDown) {
+                Vars.ISPORTRAIT = true;
+            } else if (Vars.ISPORTRAIT && Math.abs(rotationSensor.reading.x) <= 20 &&
+                       Math.abs(rotationSensor.reading.y) <= 5) {
+                Vars.ISPORTRAIT = true;
+            } else if (!Vars.ISPORTRAIT && Math.abs(rotationSensor.reading.x) <= 5 &&
+                       Math.abs(rotationSensor.reading.y) <= 20) {
+                Vars.ISPORTRAIT = false;
+            } else {
+                Vars.ISPORTRAIT = false;
+            }
+
+            console.log(Vars.ISPORTRAIT)
+        }
+    }
+    RotationSensor {
+        id: rotationSensor
+        active: false
     }
     /*
     onOrientationChanged: {
@@ -180,15 +221,20 @@ Page {
                 areaObj = null;
             }
             if (isScannedImage) {
+                orientationSensor.active = true;
+                rotationSensor.active = true;
                 options.visible = true;
                 scanButton.visible = false;
                 page.backNavigation = true;
                 img.fillMode = Image.PreserveAspectFit
             } else {
-
+                orientationSensor.active = false;
                 areaObj = Comp.createAreaObject(Screen.height, Screen.width);
                 areaObj.resetTouchPoints();
             }
-         }
+        } else if (status === PageStatus.Deactivating) {
+            orientationSensor.active = false;
+            rotationSensor.active = false;
+        }
     }
 }
