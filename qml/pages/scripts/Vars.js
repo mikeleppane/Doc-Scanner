@@ -22,3 +22,9 @@
 var CANBACKNAVIGATE = true;
 
 var VERSION = "";
+
+var ISMULTIPAGEENABLED = false;
+
+var ISPORTRAIT = false;
+
+var ACTIVATEORIENTATIONSENSOR = true;
