@@ -21,6 +21,8 @@
 #define LOGIC_H
 
 #include <QObject>
+#include <QList>
+#include <QPair>
 
 class QString;
 
@@ -83,8 +85,11 @@ public:
     /*!
      *  \brief Converts the given image to the PDF format
      *  \param[in] pathToFile Path to image
+     *  \param[in] pdfFileName File name given for the pdf document
+     *  \param[in] isPortrait If image was scanned in portrait mode, it needs to be rotated
      */
-    Q_INVOKABLE void convertToPDF(const QString &pathToFile) const;
+    Q_INVOKABLE void convertToPDF(const QString &pathToFile, const QString &pdfFileName,
+                                  bool isPortrait = false) const;
 
     /*!
      *  \brief Rotates the given image 45 degrees
@@ -97,6 +102,24 @@ public:
      */
     Q_INVOKABLE QString getVersion() const;
 
+    /*!
+     *  \brief Adds a new page to the private list
+     *  \param[in] pageName Path to page
+     */
+    Q_INVOKABLE void setNewPage(const QString& pageName, bool isPortrait = false);
+
+    /*!
+     *  \brief Converts all the pages in the list to the PDF format
+     *  \param[in] pdfFileName File name given for the pdf document
+     */
+    Q_INVOKABLE void convertPagesToPDF(const QString &pdfFileName);
+
+    /*!
+     *  \brief Checks whether the given file exists in the file system
+     *  \param[in] fileName Absolute path to image
+     */
+    Q_INVOKABLE bool checkIfImageExists(const QString &fileName);
+
 private slots:
     /*!
      *  \brief Checks if the current thread is finished
@@ -104,6 +127,7 @@ private slots:
     void checkIfThreadIsDone();
 
 private:
+    QList<QPair<QString,bool>> scannedPages;
 
 };
 

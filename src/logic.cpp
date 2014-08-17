@@ -39,9 +39,12 @@
 #include <QTimer>
 #include <QThreadPool>
 #include <QFuture>
+#include <QTransform>
 #include "logic.h"
 
 // algorithm for sharpening the image
+// unrolling used in order to reduce execution time
+
 void enhanceImage(QImage &origin, const QString &pathToImage)
 {
     QImage newImage(origin);
@@ -138,6 +141,35 @@ void enhanceImage(QImage &origin, const QString &pathToImage)
     newImage.save(pathToImage);
 }
 
+// process pages in a another thread so that main gui thread does not get stuck
+void processPages(const QString &mFileName,
+                  const QList<QPair<QString, bool>> &scannedPages)
+{
+
+    int k = 1;
+    QPdfWriter writer(mFileName);
+    QPainter painter(&writer);
+    for (const auto &page : scannedPages) {
+
+        QPixmap pixmap(page.first);
+        if (page.second) {
+            QTransform transform;
+            QTransform trans = transform.rotate(90);
+            pixmap = pixmap.transformed(trans);
+        }
+        // writer.setPageSize(QPagedPaintDevice::A4);
+        // rotateImage(pathToFile);
+        painter.drawPixmap(
+            QRect(0, 0, writer.logicalDpiX() * 8, writer.logicalDpiY() * 11),
+            pixmap);
+        if (k < scannedPages.count()) {
+            writer.newPage();
+            k++;
+        }
+    }
+    painter.end();
+}
+
 Logic::Logic(QObject *parent) : QObject(parent) {}
 
 QString Logic::scanImage(int x, int y, int w, int h, const QString &pathToImage)
@@ -229,28 +261,44 @@ QString Logic::getImageCreateDate(const QString &pathToImage) const
 
 void Logic::sendEmail() const { QDesktopServices::openUrl(QUrl("mailto:")); }
 
-void Logic::convertToPDF(const QString &pathToFile) const
+void Logic::convertToPDF(const QString &pathToFile, const QString &pdfFileName,
+                         bool isPortrait) const
 {
-    QString pdfFileName(pathToFile);
-    pdfFileName =
-        pdfFileName.replace(pdfFileName.lastIndexOf(".") + 1,
-                            QFileInfo(pathToFile).suffix().length(), "pdf");
-    QPdfWriter writer(pdfFileName);
-    QPainter painter(&writer);
-    writer.setPageSize(QPagedPaintDevice::A4);
-    painter.drawPixmap(
-        QRect(0, 0, writer.logicalDpiX() * 8, writer.logicalDpiY() * 10),
-        QPixmap(pathToFile));
-    painter.end();
+    QString mFileName{};
+    if (pdfFileName.isEmpty()) {
+        QDate date = QDate::currentDate();
+        QTime time = QTime::currentTime();
+        mFileName = "unnamed_scan_created_" + date.toString("dd-MM-yyyy") +
+                    "_" + time.toString("hh:mm:ss") + ".pdf";
+    } else {
+        mFileName.append(pdfFileName);
+        if (!mFileName.endsWith(".pdf")) {
+            mFileName.append(".pdf");
+        }
+    }
 
+    QPixmap pixmap(pathToFile);
+
+    if (isPortrait) {
+        QTransform transform;
+        QTransform trans = transform.rotate(90);
+        pixmap = pixmap.transformed(trans);
+    }
+    QPdfWriter writer(mFileName);
+    // writer.setPageSize(QPagedPaintDevice::A4);
+    QPainter painter(&writer);
+    painter.drawPixmap(
+        QRect(0, 0, writer.logicalDpiX() * 8, writer.logicalDpiY() * 11),
+        pixmap);
+    painter.end();
     QString newPdfFileName =
         QStandardPaths::displayName(QStandardPaths::DocumentsLocation) + "/" +
-        QFileInfo(pdfFileName).fileName();
-    QFile file(pdfFileName);
+        QFileInfo(mFileName).fileName();
+    QFile file(mFileName);
     try { file.rename(newPdfFileName); }
     catch (const std::exception &e)
     {
-        qWarning("Unable to rename file %s\n%s", qPrintable(pdfFileName),
+        qWarning("Unable to rename file %s\n%s", qPrintable(mFileName),
                  qPrintable(e.what()));
     }
 }
@@ -262,7 +310,7 @@ void Logic::rotateImage(const QString &pathToImage) const
         QImage img;
         img.load(pathToImage);
         QMatrix matrix;
-        img.transformed(matrix.rotate(45.0),
+        img.transformed(matrix.rotate(90.0),
                         Qt::TransformationMode::SmoothTransformation);
         file.remove();
         img.save(pathToImage);
@@ -295,6 +343,50 @@ QString Logic::getVersion() const
         }
     }
     return QString();
+}
+
+void Logic::setNewPage(const QString &pageName, bool isPortrait)
+{
+    qDebug() << pageName << " " << isPortrait << "\n";
+    scannedPages.append(qMakePair(pageName, isPortrait));
+}
+
+void Logic::convertPagesToPDF(const QString &pdfFileName)
+{
+    QString mFileName{};
+    if (pdfFileName.isEmpty()) {
+        QDate date = QDate::currentDate();
+        QTime time = QTime::currentTime();
+        mFileName = "unnamed_scan_created_" + date.toString("dd-MM-yyyy") +
+                    "_" + time.toString("hh:mm:ss") + ".pdf";
+    } else {
+        mFileName.append(pdfFileName);
+        if (!mFileName.endsWith(".pdf")) {
+            mFileName.append(".pdf");
+        }
+    }
+    QFuture<void> f = QtConcurrent::run(processPages, mFileName, scannedPages);
+    QString newPdfFileName =
+        QStandardPaths::displayName(QStandardPaths::DocumentsLocation) + "/" +
+        QFileInfo(mFileName).fileName();
+    QFile file(mFileName);
+    try { file.rename(newPdfFileName); }
+    catch (const std::exception &e)
+    {
+        qWarning("Unable to rename file %s\n%s", qPrintable(mFileName),
+                 qPrintable(e.what()));
+    }
+    scannedPages.clear();
+}
+
+bool Logic::checkIfImageExists(const QString &fileName)
+{
+    QFile file(fileName);
+    if (file.exists()) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void Logic::checkIfThreadIsDone()
