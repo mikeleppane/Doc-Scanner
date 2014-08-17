@@ -41,7 +41,9 @@ OTHER_FILES += qml/harbour-docscanner.qml \
     qml/pages/imagehandler.py \
     qml/pages/scripts/componentCreation.js \
     qml/pages/content/ZoomItem.qml \
-    rpm/harbour-docscanner.changes
+    rpm/harbour-docscanner.changes \
+    qml/pages/OptionsPage.qml \
+    qml/pages/PDFNameDialog.qml
 
 CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/harbour-docscanner-de.ts
