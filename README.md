@@ -8,8 +8,8 @@ Doc Scanner UI is written purely in QML(Qt5) and the application logic using C++
 
 ToDo
 ----
-- Allow creating multi-page document
-- Algorithm/method to detect corners of a paper sheet 
+- detect corners from a paper sheet
+- text recognition eg. extract info from a business card
 
 Downloads
 ---------
