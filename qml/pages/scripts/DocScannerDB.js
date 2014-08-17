@@ -20,6 +20,7 @@
 .pragma library
 .import QtQuick.LocalStorage 2.0 as Sql
 
+// global variable to hold database instance
 var db;
 
 function openDB() {
