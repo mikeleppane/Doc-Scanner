@@ -19,19 +19,30 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import QtMultimedia 5.0
 import "pages"
 import "pages/scripts/DocScannerDB.js" as DB
 import "pages/scripts/Vars.js" as Vars
 
 ApplicationWindow
 {
-    initialPage: Component { MainPage { } }
+    id: appWindow
+    MainPage {id: mainpage }
+    initialPage: mainpage
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 
     Component.onCompleted: {
         DB.openDB();
         myImageModel.addImages(StandardPaths.pictures);
         Vars.VERSION = logic.getVersion();
+    }
+
+    onApplicationActiveChanged: {
+        if (!applicationActive) {
+            mainpage.cameraObj.cameraState = Camera.UnloadedState;
+        } else {
+            mainpage.cameraObj.cameraState = Camera.ActiveState;
+        }
     }
 }
 
