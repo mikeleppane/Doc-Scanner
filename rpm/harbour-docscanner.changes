@@ -1,3 +1,13 @@
+* Sun Aug 17 2014 Mikko Leppänen <mleppan23@gmail.com> 1.6-1
+- Support for multipage docs
+- User can now name PDFs
+- Some UI changes
+
+* Mon Jul 28 2014 Mikko Leppänen <mleppan23@gmail.com> 1.5-1
+- Bug fixed: using device camera at the same time does not cause interference
+- A few modification to the camera settings
+- Device images are now updated in real time
+
 * Sun Jul 27 2014 Mikko Leppänen <mleppan23@gmail.com> 1.4-1
 - Improved performance(~ 3x) when generating scan
 - Zooming can now be done directly on a viewfinder
