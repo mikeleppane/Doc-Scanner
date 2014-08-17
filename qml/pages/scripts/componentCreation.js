@@ -17,6 +17,8 @@
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Create Area.qml object dynamically
+
 function createAreaObject(cw,ch) {
     var component = Qt.createComponent(Qt.resolvedUrl("../content/Area.qml"));
     if (component.status === Component.Ready) {
