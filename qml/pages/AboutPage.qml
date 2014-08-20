@@ -21,6 +21,9 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "scripts/Vars.js" as Vars
 
+/**
+ * @brief Page to display an info about the app
+ */
 Page {
     SilicaFlickable {
         anchors.fill: parent;
