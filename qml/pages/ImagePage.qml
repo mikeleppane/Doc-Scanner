@@ -27,8 +27,8 @@ import "scripts/componentCreation.js" as Comp
 // import io.thp.pyotherside 1.2
 
 /**
-* @brief Page to display an image
-*/
+ * @brief Page to display an image
+ */
 Page {
     id: page
     //width: Screen.width
@@ -40,10 +40,12 @@ Page {
      * @brief type:string Path to the Image
      */
     property string path: null
+
     /**
      * @brief type:bool Is current image already scanned
      */
     property bool isScannedImage: false
+
     /**
      * @brief type:var A variable to store Area.qml object
      */
@@ -188,8 +190,6 @@ Page {
             } else {
                 Vars.ISPORTRAIT = false;
             }
-
-            console.log(Vars.ISPORTRAIT)
         }
     }
     RotationSensor {
