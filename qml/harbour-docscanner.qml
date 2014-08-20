@@ -24,6 +24,9 @@ import "pages"
 import "pages/scripts/DocScannerDB.js" as DB
 import "pages/scripts/Vars.js" as Vars
 
+/**
+ * @brief Root object
+ */
 ApplicationWindow
 {
     id: appWindow
