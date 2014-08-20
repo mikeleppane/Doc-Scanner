@@ -20,17 +20,35 @@
 import QtQuick 2.1
 import Sailfish.Silica 1.0
 import QtMultimedia 5.0
+import QtSensors 5.0
 //import Sailfish.Media 1.0
 //import com.jolla.camera 1.0
 import "content"
+import "scripts/Vars.js" as Vars
 
-
+/**
+* @brief Top level page to display video output
+*/
 Page {
     id: page
     allowedOrientations: Orientation.Portrait
 
+    /**
+     * @brief type:real Helper variable to store previous distance
+     */
     property real refPoint
 
+    /**
+     * @brief type:cameraObj Allowing access to the camera obj from the root level
+     */
+    property alias cameraObj: camera
+
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function calculateTouchPointDistance(p1, p2) {
         return Math.sqrt(Math.pow(p1.x - p2.x,2) + Math.pow(p1.y - p2.y,2))
     }
@@ -43,6 +61,10 @@ Page {
             MenuItem {
                 text: qsTr("About")
                 onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"));
+            }
+            MenuItem {
+                text: qsTr("Options")
+                onClicked: pageStack.push(Qt.resolvedUrl("OptionsPage.qml"));
             }
             MenuItem {
                 text: qsTr("Show Scanned Images")
@@ -155,6 +177,15 @@ Page {
             }
             flash.mode: Camera.FlashOff
 
+            imageProcessing {
+                sharpeningLevel: 1
+            }
+
+            exposure {
+                exposureCompensation: -1.0
+                exposureMode: Camera.ExposurePortrait
+            }
+
         }
     }
     Marker {
@@ -188,12 +219,61 @@ Page {
         }
         z: 30
     }
+
+    OrientationSensor {
+        id: orientationSensor
+        active: false
+
+        onReadingChanged: {
+            if (reading.orientation === OrientationReading.TopUp ||
+                reading.orientation === OrientationReading.TopDown) {
+                Vars.ISPORTRAIT = true;
+            } else if (Vars.ISPORTRAIT && Math.abs(rotationSensor.reading.x) <= 20 &&
+                       Math.abs(rotationSensor.reading.y) <= 5) {
+                Vars.ISPORTRAIT = true;
+            } else if (!Vars.ISPORTRAIT && Math.abs(rotationSensor.reading.x) <= 5 &&
+                       Math.abs(rotationSensor.reading.y) <= 20) {
+                Vars.ISPORTRAIT = false;
+            } else {
+                Vars.ISPORTRAIT = false;
+            }
+        }
+    }
+    RotationSensor {
+        id: rotationSensor
+        active: false
+    }
+
     Connections {
         target: camera.imageCapture
 
         onImageSaved: {
             myImageModel.addImage(path);
             onClicked: pageStack.push(Qt.resolvedUrl("ImagePage.qml"),{"path": path});
+        }
+    }
+    onStatusChanged: {
+        if (status === PageStatus.Activating) {
+            orientationSensor.active = true;
+            rotationSensor.active = true;
+            if (orientationSensor.reading.orientation === OrientationReading.TopUp ||
+                orientationSensor.reading.orientation === OrientationReading.TopDown) {
+                Vars.ISPORTRAIT = true;
+            } else if (Vars.ISPORTRAIT && Math.abs(rotationSensor.reading.x) <= 20 &&
+                       Math.abs(rotationSensor.reading.y) <= 5) {
+                Vars.ISPORTRAIT = true;
+            } else if (!Vars.ISPORTRAIT && Math.abs(rotationSensor.reading.x) <= 5 &&
+                       Math.abs(rotationSensor.reading.y) <= 20) {
+                Vars.ISPORTRAIT = false;
+            } else {
+                Vars.ISPORTRAIT = false;
+            }
+        } else if (status === PageStatus.Deactivating) {
+            orientationSensor.active = false;
+            rotationSensor.active = false;
+        } else if (status === PageStatus.Inactive) {
+            orientationSensor.active = false;
+            rotationSensor.active = false;
         }
     }
 }
