@@ -347,7 +347,6 @@ QString Logic::getVersion() const
 
 void Logic::setNewPage(const QString &pageName, bool isPortrait)
 {
-    qDebug() << pageName << " " << isPortrait << "\n";
     scannedPages.append(qMakePair(pageName, isPortrait));
 }
 
@@ -365,6 +364,8 @@ void Logic::convertPagesToPDF(const QString &pdfFileName)
             mFileName.append(".pdf");
         }
     }
+    // runnig processPages on a different thread so that the main gui does not
+    // froze
     QFuture<void> f = QtConcurrent::run(processPages, mFileName, scannedPages);
     QString newPdfFileName =
         QStandardPaths::displayName(QStandardPaths::DocumentsLocation) + "/" +
