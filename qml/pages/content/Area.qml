@@ -20,42 +20,127 @@
 import QtQuick 2.0
 import "../scripts/Vars.js" as Vars
 
+/**
+* @brief Ui element item to show scan area object
+*/
 Item {
+    /**
+     * @brief type:string Path to the Image
+     */
     property int lineW: 2
+    /**
+     * @brief type:string Path to the Image
+     */
     property alias cHeight: canvas.height
+    /**
+     * @brief type:string Path to the Image
+     */
     property alias cWidth: canvas.width
+    /**
+     * @brief type:string Path to the Image
+     */
     property alias canvasObj: canvas
+    /**
+     * @brief type:string Path to the Image
+     */
     property int cx: Math.ceil(canvas.circle1LastX)
+    /**
+     * @brief type:string Path to the Image
+     */
     property int cy: Math.ceil(canvas.circle1LastY)
+    /**
+     * @brief type:string Path to the Image
+     */
     property int cw: Math.ceil(Math.abs(canvas.circle1LastX - canvas.circle2LastX)) >
                      Math.ceil(Math.abs(canvas.circle3LastX - canvas.circle4LastX)) ?
                      Math.ceil(Math.abs(canvas.circle1LastX - canvas.circle2LastX)) :
                      Math.ceil(Math.abs(canvas.circle3LastX - canvas.circle4LastX))
+    /**
+     * @brief type:string Path to the Image
+     */
     property int ch: Math.ceil(Math.abs(canvas.circle1LastY - canvas.circle4LastY)) >
                      Math.ceil(Math.abs(canvas.circle2LastY - canvas.circle3LastY)) ?
                      Math.ceil(Math.abs(canvas.circle1LastY - canvas.circle4LastY)) :
                      Math.ceil(Math.abs(canvas.circle2LastY - canvas.circle3LastY))
-
+    /**
+     * @brief type:string Path to the Image
+     */
     property string circleFillStyleOff: 'transparent'
-
+    /**
+     * @brief type:string Path to the Image
+     */
     property int circle1LineW: 2
+    /**
+     * @brief type:string Path to the Image
+     */
     property int circle2LineW: 2
+    /**
+     * @brief type:string Path to the Image
+     */
     property int circle3LineW: 2
+    /**
+     * @brief type:string Path to the Image
+     */
     property int circle4LineW: 2
 
+    /**
+     * @brief type:string Path to the Image
+     */
     property int line1LineW: 2
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property int line2LineW: 2
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property int line3LineW: 2
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property int line4LineW: 2
 
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool circle1Pressed: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool circle2Pressed: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool circle3Pressed: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool circle4Pressed: false
 
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool line1Pressed: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool line2Pressed: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool line3Pressed: false
+
+    /**
+     * @brief type:string Path to the Image
+     */
     property bool line4Pressed: false
 
     z: 10
@@ -65,55 +150,195 @@ Item {
         width: 350
         height: 350
 
+        /**
+         * @brief type:string Path to the Image
+         */
         property int radius: 40
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property int space: 50
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle1LastX: radius + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle1LastY: radius + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle2LastX: canvas.width - radius*5 + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle2LastY: radius + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle3LastX: canvas.width - radius*5 + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle3LastY: canvas.height - radius*5 + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle4LastX: radius + space
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property real circle4LastY: canvas.height - radius*5 + space
 
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtCircle1
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtLine1
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtCircle2
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtLine2
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtCircle3
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtLine3
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtCircle4
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtLine4
 
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtDashLine1
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtDashLine2
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtDashLine3
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtDashLine4
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtDashLine5
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var cxtDashLine6
 
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine11: calculateLineCentralPoint(circle1LastX, circle1LastY,
                                                                  circle2LastX, circle2LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine12: calculateLineCentralPoint(circle3LastX, circle3LastY,
                                                                  circle4LastX, circle4LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine31: calculateLineCentralPoint(circle1LastX, circle1LastY,
                                                                  pointsDashLine11[0], pointsDashLine11[1]);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine32: calculateLineCentralPoint(circle4LastX, circle4LastY,
                                                                  pointsDashLine12[0], pointsDashLine12[1]);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine41: calculateLineCentralPoint(pointsDashLine11[0], pointsDashLine11[1],
                                                                  circle2LastX, circle2LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine42: calculateLineCentralPoint(pointsDashLine12[0], pointsDashLine12[1],
                                                                  circle3LastX, circle3LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine21: calculateLineCentralPoint(canvas.circle1LastX, canvas.circle1LastY,
                                                                  canvas.circle4LastX, canvas.circle4LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine22: calculateLineCentralPoint(canvas.circle2LastX, canvas.circle2LastY,
                                                                  canvas.circle3LastX, canvas.circle3LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine51: calculateLineCentralPoint(canvas.circle1LastX, canvas.circle1LastY,
                                                                  pointsDashLine21[0], pointsDashLine21[1]);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine52: calculateLineCentralPoint(canvas.circle2LastX, canvas.circle2LastY,
                                                                  pointsDashLine22[0], pointsDashLine22[1]);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine61: calculateLineCentralPoint(pointsDashLine21[0], pointsDashLine21[1],
                                                                  canvas.circle4LastX, canvas.circle4LastY);
+
+        /**
+         * @brief type:string Path to the Image
+         */
         property var pointsDashLine62: calculateLineCentralPoint(pointsDashLine22[0], pointsDashLine22[1],
                                                                  canvas.circle3LastX, canvas.circle3LastY);
         smooth: true
@@ -397,6 +622,13 @@ Item {
             }
         }
     }
+
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function findCircle(x,y) {
         /*
         var distances = [
@@ -433,6 +665,12 @@ Item {
         return circleArray.indexOf(true) + 1;
     }
 
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function findLine(x,y) {
 
         var lineArray = [Math.sqrt(Math.pow(canvas.circle1LastX - x,2) +
@@ -460,6 +698,12 @@ Item {
         return lineArray.indexOf(true) + 1;
     }
 
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function resetTouchPoints() {
         canvas.radius = 40;
         canvas.space = 50;
@@ -473,6 +717,12 @@ Item {
         canvas.circle4LastY = canvas.height - canvas.radius * 4 + canvas.space;
     }
 
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function resetLineW() {
         circle1LineW = 2;
         circle2LineW = 2;
@@ -494,6 +744,12 @@ Item {
         line4Pressed = false;
     }
 
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function calculatePointLineDistance(x, y, lineNum) {
         // d = abs(det(x2 - x1, x1 - x0)) / norm(x2 - x1)
         switch (lineNum) {
@@ -524,6 +780,12 @@ Item {
         }
     }
 
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function createDashedLine(cxt, x1, y1, x2, y2, dashLen) {
         cxt.beginPath();
         cxt.moveTo(x1, y1);
@@ -548,6 +810,12 @@ Item {
         cxt.closePath();
     }
 
+    /**
+     * @brief Calculates euclidean distance between to points
+     * @param type:string levelName Name of the level
+     * @param type:object represents first point, x and y are parameters
+     * @param type:object represents second point, x and y are parameters
+     */
     function calculateLineCentralPoint(x1, y1, x2, y2) {
 
         var Px = 0;
