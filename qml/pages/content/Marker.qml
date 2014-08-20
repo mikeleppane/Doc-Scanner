@@ -19,10 +19,26 @@
 
 import QtQuick 2.1
 
+/**
+ * @brief Ui element item for video output marker
+ */
 Item {
+
+    /**
+     * @brief type:canvas Reference to canvas object
+     */
     property alias canvasObj: canvas
+
+    /**
+     * @brief type:canvas.rotation Reference to canvas object's rotation
+     */
     property alias canvasRotation: canvas.rotation
+
+    /**
+     * @brief type:int Line width of the marker
+     */
     property int lineW: 10
+
     Canvas {
         id: canvas
         smooth: true

@@ -1,11 +1,26 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
+/**
+ * @brief Ui element item for showing zoom level
+ */
 Item {
     id: root
     width: Screen.width
+
+    /**
+     * @brief type:root reference to root item
+     */
     property alias rootItem: root
+
+    /**
+     * @brief type:real Digital zoom factor
+     */
     property real factor: 0.0
+
+    /**
+     * @brief type:string Is user zooming in or out
+     */
     property string zoomDir: ""
 
     Label {
