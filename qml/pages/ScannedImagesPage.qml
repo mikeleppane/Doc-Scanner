@@ -22,20 +22,25 @@ import Sailfish.Silica 1.0
 import "scripts/DocScannerDB.js" as DB
 //import "../pages/scripts/Vars.js" as Vars
 
+/**
+ * @brief Shows all the scanned images from the database
+ */
 Page {
     id: imagepage
     width: Screen.width
     height: Screen.height
 
+    /**
+     * @brief type:list List to hold the images
+     */
     property var images: []
 
-    /*
     BusyIndicator {
+        id: indicator
         anchors.centerIn: parent
-        running: listView.model.status === ListModel.Loading
-        size: BusyIndicatorSize.Medium
+        running: imageModel.status === ListModel.Loading
+        size: BusyIndicatorSize.Large
     }
-    */
 
     SilicaListView {
         id: listView
@@ -47,8 +52,25 @@ Page {
             title: qsTr("Scanned Images")
         }
         ViewPlaceholder {
-            enabled: imageModel.count === 0
-            text: qsTr("No scanned images available")
+            enabled: imageModel.count === 0 || indicator.running
+            text: indicator.running ? qsTr("Loading images") : qsTr("No scanned images available")
+        }
+
+        PullDownMenu {
+            MenuItem {
+                text: qsTr("Delete All")
+                onClicked: {
+                    if (images.length > 0) {
+                        var i = 0, count = imageModel.count
+                        for (; i < count; i++) {
+                            DB.removeImage(imageModel.get(i).path)
+                            myImageModel.removeImage(imageModel.get(i).path, i)
+                        }
+                        imageModel.clear();
+                        images = [];
+                    }
+                }
+            }
         }
 
         delegate: imageDelegate
@@ -138,8 +160,8 @@ Page {
                                 var ind = index;
                                 DB.removeImage(path)
                                 myImageModel.removeImage(path, ind)
-                                images.splice(index,1);
-                                imageModel.remove(index);
+                                images.splice(ind,1);
+                                imageModel.remove(ind);
                                 if (ind > 1) {
                                     listView.positionViewAtIndex(ind - 1,ListView.SnapPosition)
                                 }
@@ -150,12 +172,19 @@ Page {
     }
     onStatusChanged: {
         if (status === PageStatus.Activating) {
+            //indicator.running = true;
+        } else if (status === PageStatus.Active) {
             if (imageModel.count !== 0) imageModel.clear();
             images = DB.getImages();
             var i = 0, count = images.length;
             for (; count > 0; count--) {
-                imageModel.append({"path": images[count - 1].path});
+                if (logic.checkIfImageExists(images[count - 1].path)) {
+                    imageModel.append({"path": images[count - 1].path});
+                } else {
+                    DB.removeImage(images[count - 1].path);
+                }
             }
-         }
+            indicator.running = false;
+        }
     }
 }

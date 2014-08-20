@@ -20,9 +20,13 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
+/**
+ * @brief Application's cover page
+ */
 CoverBackground {
     id: cover
-    property bool active: status === Cover.Active
+
+    //property bool active: status === Cover.Active
 
     Image {
         id: icon
